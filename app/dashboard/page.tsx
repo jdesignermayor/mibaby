@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
 export default function Dashboard() {
   return (
@@ -53,7 +54,7 @@ export default function Dashboard() {
             <div className="grid gap-3">
               <Card className="w-100 h-72 bg-gray-100 relative overflow-hidden rounded-lg text-white border-none">
                 <CardContent className="w-full h-full flex justify-center items-center ">
-                  <img
+                  <Image
                     src="https://www.centroginecologicolua.com/ecografias-5d-ve-a-tu-bebe-antes-de-nacer_img19071t1.jpg"
                     alt="Card Image"
                     width={500}
@@ -69,7 +70,7 @@ export default function Dashboard() {
             <div className="grid gap-3">
               <Card className="w-100 h-72 bg-gray-100 relative overflow-hidden rounded-lg text-white border-none">
                 <CardContent className="w-full h-full flex justify-center items-center ">
-                  <img
+                  <Image
                     src="https://www.centroginecologicolua.com/ecografias-5d-ve-a-tu-bebe-antes-de-nacer_img19071t1.jpg"
                     alt="Card Image"
                     width={500}

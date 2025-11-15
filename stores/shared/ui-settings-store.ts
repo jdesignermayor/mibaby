@@ -1,16 +1,12 @@
 import type { UISettings } from "@/models/ui-settings.model";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { atom } from "jotai";
 
-export type UISettingsActions = {
-  onCreationalMode: () => void;
-};
-
-export type UISettingsStore = UISettings & UISettingsActions;
-
-export const defaultState: UISettingsStore = {
-  creationalMode: false,
-  currentActivePage: "home",
+const initialValue: UISettings = {
+  isCreationalModeEnabled: false,
+  stepper: {
+    currentStep: 1,
+    totalSteps: 3,
+  },
   menuOptions: [
     {
       isActive: true,
@@ -31,22 +27,6 @@ export const defaultState: UISettingsStore = {
       link: "/dashboard/create-illustration",
     },
   ],
-  onCreationalMode: () => {},
 };
 
-const usePersistentUISettingsStore = create<UISettingsStore>()(
-  persist(
-    (set) => ({
-      ...defaultState,
-      onCreationalMode: () =>
-        set((state: UISettingsStore) => ({
-          creationalMode: state.creationalMode,
-        })),
-    }),
-    {
-      name: "ui-settings-store",
-    },
-  ),
-);
-
-export default usePersistentUISettingsStore;
+export const uiSettingsAtomState = atom(initialValue);

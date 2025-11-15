@@ -1,7 +1,5 @@
 import type { IconName } from "lucide-react/dynamic";
 
-type Pages = "home" | "profiles" | "settings" | "create-illustration";
-
 export type MenuOption = {
   isActive: boolean;
   label: string;
@@ -9,8 +7,13 @@ export type MenuOption = {
   link: string;
 };
 
+export type Stepper = {
+  currentStep: number;
+  totalSteps: number;
+};
+
 export interface UISettings {
-  currentActivePage: Pages;
-  creationalMode: boolean;
   menuOptions: MenuOption[];
+  isCreationalModeEnabled: boolean;
+  stepper: Stepper;
 }

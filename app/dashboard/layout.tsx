@@ -1,4 +1,5 @@
 import UserGeneralMenu from "@/components/shared/UserGeneralMenu";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function DashboardLayout({
   children,
@@ -9,12 +10,13 @@ export default function DashboardLayout({
         <div>
           <UserGeneralMenu />
         </div>
-        <div className="flex justify-center p-5 w-full ">
-          <div className="flex lg:w-[calc(90%)] xl:w-[calc(90%-100px)] h-full mb-5">
-            <div className="w-full pt-12">{children}</div>
+        <div className="flex justify-center w-full ">
+          <div className="flex w-full h-full">
+            <div className="w-full">{children}</div>
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

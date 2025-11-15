@@ -2,16 +2,31 @@
 
 import UserTeamToggleButton from "@/components/shared/UserTeamToggleButton";
 import { Button } from "@/components/ui/button";
-import type { MenuOption } from "@/models/ui-settings.model";
-import usePersistentUISettingsStore from "@/stores/shared/ui-settings-store";
-import { PlusIcon } from "lucide-react";
+import { useAtom } from "jotai";
+import { PaintbrushIcon, PlusIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Link from "next/link";
-import { useState } from "react";
+
+import { uiSettingsAtomState } from "@/stores/shared/ui-settings-store";
 
 export default function UserGeneralMenu() {
-  const { menuOptions: menuOptionsState } = usePersistentUISettingsStore();
-  const [menuOptions, _] = useState<MenuOption[]>(menuOptionsState);
+  const [uiSettings, setUISettings] = useAtom(uiSettingsAtomState);
+  const { menuOptions } = uiSettings;
+
+  const chats = [
+    {
+      id: 1,
+      name: "Customer name 1",
+      lastMessage: "Hello, how are you?",
+      lastMessageDate: "2023-03-01",
+    },
+    {
+      id: 2,
+      name: "Customer name 2",
+      lastMessage: "Hello, how are you?",
+      lastMessageDate: "2023-03-01",
+    },
+  ];
 
   return (
     <div className="flex flex-col w-72 h-[calc(100vh)] border-r p-3 gap-56">
@@ -26,7 +41,7 @@ export default function UserGeneralMenu() {
           <UserTeamToggleButton />
           <Link href="/dashboard/create-illustration">
             <Button className="w-full cursor-pointer">
-              <PlusIcon />
+              <PaintbrushIcon />
               Create illustration
             </Button>
           </Link>
@@ -58,6 +73,29 @@ export default function UserGeneralMenu() {
             })}
           </ul>
         </div>
+        {/* <div>
+          <div>
+            <p>Chats</p>
+          </div>
+          <ul className="flex flex-col pt-3">
+            {chats.map((chat) => {
+              return (
+                <li key={chat.id}>
+                  <Link href={""}>
+                    <Button
+                      variant={"ghost"}
+                      size="lg"
+                      aria-label="Submit"
+                      className={"w-full flex justify-start cursor-pointer"}
+                    >
+                      {chat.name}
+                    </Button>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div> */}
         <div>
           <Button variant={"outline"} className="w-full cursor-pointer">
             <PlusIcon />
