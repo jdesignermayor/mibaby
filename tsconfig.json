@@ -32,6 +32,9 @@
       "@/shared-components/*": [
         "./components/shared/*"
       ],
+      "@/features-components/*": [
+        "./components/features/*"
+      ],
       "@/shared-stores/*": [
         "./stores/shared/*"
       ]
