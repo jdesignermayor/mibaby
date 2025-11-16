@@ -18,8 +18,13 @@ export interface Illustration {
   customerId: string;
   description: string;
   images: ImageFormat[];
+  gestational_week?: string;
+  avatar_picture?: {
+    name: string;
+    base64: string;
+  };
   createdAt: string;
-  stepperSteps: StepperStep[];
+  stepperSteps?: StepperStep[];
 }
 
 export interface ImageSetItem {

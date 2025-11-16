@@ -56,7 +56,7 @@ export const GESTATIONAL_WEEKS = Array.from({ length: 7 }, (_, i) => ({
 export default function CreateIllustrationForm() {
   const { data: profiles } = useCompany();
   const [_, setUISettings] = useAtom(uiSettingsAtomState);
-  
+
 
   const [isImageDuplicatedError, setIsImageDuplicatedError] = useState(false);
   const {
@@ -80,13 +80,6 @@ export default function CreateIllustrationForm() {
   const [isDragging, setIsDragging] = useState(false);
 
   const onSubmit = async (formValues: FormSchema) => {
-    // setUISettings((prev) => ({
-    //   ...prev,
-    //   stepper: {
-    //     ...prev.stepper,
-    //     currentStep: prev.stepper.currentStep + 1,
-    //   },
-    // }));
 
     const formData = new FormData();
     formData.append('customerId', formValues.customerId);
@@ -94,7 +87,25 @@ export default function CreateIllustrationForm() {
     formData.append('gestationalWeek', formValues.gestationalWeek);
     formData.append('images', JSON.stringify(formValues.images));
 
-    const data = await createIllustration(formData);
+
+
+    try {
+      const result = await createIllustration(formData);
+
+      const { id } = result.data;
+
+      setUISettings((prev) => ({
+        ...prev,
+        stepper: {
+          ...prev.stepper,
+          currentStep: prev.stepper.currentStep + 1,
+        },
+      }));
+
+    } catch (error) {
+
+    }
+
     console.log("data:", data);
   };
 
@@ -236,8 +247,8 @@ export default function CreateIllustrationForm() {
         )}
 
         {base64Images.length > 0 && (
-        <div className="flex flex-wrap gap-2  overflow-y-scroll">
-          {base64Images.map((img, index) => {
+          <div className="flex flex-wrap gap-2  overflow-y-scroll">
+            {base64Images.map((img, index) => {
               return (
                 <div key={String(index)} className="relative">
                   <Button
@@ -265,18 +276,18 @@ export default function CreateIllustrationForm() {
                 </div>
               );
             })}
-          {isImageDuplicatedError && (
-            <FieldError
-              errors={[{ message: "The image is already in the list" }]}
-            />
-          )}
-          <div className=" w-30 h-30 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
-          >
-            <PlusIcon />
+            {isImageDuplicatedError && (
+              <FieldError
+                errors={[{ message: "The image is already in the list" }]}
+              />
+            )}
+            <div className=" w-30 h-30 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
+            >
+              <PlusIcon />
+            </div>
           </div>
-        </div>
         )}
-        
+
         <div className="flex gap-2">
           <div>
             <Controller

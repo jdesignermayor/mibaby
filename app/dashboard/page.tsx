@@ -3,10 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { getIllustrations } from "../actions/illustration";
+import { Suspense } from "react";
+import ListCurrentIllustrations from "@/components/features/create-illustration/ListCurrentIllustrations";
 
 export default function Dashboard() {
+
+  
   return (
-    <div className="flex flex-col gap-8 w-full">
+    <div className="flex flex-col gap-8 w-full p-5">
       <div className="grid gap-4">
         <div>
           <h1 className="font-bold text-2xl bg-linear-to-r from-indigo-500 via-violet-600 to-blue-500 bg-clip-text text-transparent">
@@ -18,7 +23,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex flex-col gap-8">
-          <Card className="bg-linear-to-r from-violet-200 to-pink-200 h-[calc(25dvh)]">
+          <Card className="bg-linear-to-r from-violet-200 to-pink-200 h-[calc(20dvh)]">
             <CardContent></CardContent>
           </Card>
         </div>
@@ -51,38 +56,7 @@ export default function Dashboard() {
         </div>
         <div>
           <div className="flex gap-6">
-            <div className="grid gap-3">
-              <Card className="w-100 h-72 bg-gray-100 relative overflow-hidden rounded-lg text-white border-none">
-                <CardContent className="w-full h-full flex justify-center items-center ">
-                  <Image
-                    src="https://www.centroginecologicolua.com/ecografias-5d-ve-a-tu-bebe-antes-de-nacer_img19071t1.jpg"
-                    alt="Card Image"
-                    width={500}
-                    height={500}
-                  />
-                </CardContent>
-              </Card>
-              <div>
-                <p className="font-bold">Bebebe de johana</p>
-                <p className=" text-gray-500">sadasdasdsadasdasdasd </p>
-              </div>
-            </div>
-            <div className="grid gap-3">
-              <Card className="w-100 h-72 bg-gray-100 relative overflow-hidden rounded-lg text-white border-none">
-                <CardContent className="w-full h-full flex justify-center items-center ">
-                  <Image
-                    src="https://www.centroginecologicolua.com/ecografias-5d-ve-a-tu-bebe-antes-de-nacer_img19071t1.jpg"
-                    alt="Card Image"
-                    width={500}
-                    height={500}
-                  />
-                </CardContent>
-              </Card>
-              <div>
-                <p className="font-bold">Bebebe de johana</p>
-                <p className=" text-gray-500">sadasdasdsadasdasdasd </p>
-              </div>
-            </div>
+              <ListCurrentIllustrations />
           </div>
         </div>
       </div>
