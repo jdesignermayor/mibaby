@@ -17,9 +17,9 @@ export default function CreateIllustrationHeader() {
   };
 
   return (
-    <div className="flex flex-col gap-2 border-b-2 w-full bg-gray-100 p-5">
-      <p>3D Ultrasound → Hyperrealistic Rendering</p>
-      <p className="font-bold">{stepperProps.title}</p>
+    <div className="flex flex-col border-b-2 w-full bg-gray-100 px-4 py-2">
+      <p className="text-sm">3D Ultrasound → Hyperrealistic Rendering</p>
+      <p className="font-bold text-sm">{stepperProps.title}</p>
     </div>
   );
 }

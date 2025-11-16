@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import CreateCustomerDialog from "@/features-components/create-profile/CreateProfileForm";
 import { useCompany } from "@/hooks/use-company";
 import type { ImageFormat } from "@/models/illustration.model";
 import { uiSettingsAtomState } from "@/stores/shared/ui-settings-store";
@@ -27,6 +26,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
+import CreateCustomerDialog from "../create-profile/CreateProfileForm";
 
 const imageSchema = z.object({
   name: z.string(),
@@ -258,62 +258,79 @@ export default function CreateIllustrationForm() {
             />
           )}
         </div>
-        <Controller
-          name="customerId"
-          control={control}
-          rules={{ required: true }}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel
-                htmlFor="form-rhf-demo-title"
-                className="flex justify-between items-center"
-              >
-                <div>Selecciona el cliente</div>
-                <div>
-                  <CreateCustomerDialog />
+        <div className="flex gap-2">
+          <div>
+            <Controller
+              name="customerId"
+              control={control}
+              rules={{ required: true }}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel
+                    htmlFor="form-rhf-demo-title"
+                    className="flex justify-between items-center"
+                  >
+                    <div>Selecciona el cliente</div>
+                  </FieldLabel>
+
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger aria-invalid={fieldState.invalid}>
+                      <SelectValue placeholder="Select customer" />
+                    </SelectTrigger>
+                    <SelectContent position="item-aligned">
+                      {profiles.map((profile) => (
+                        <SelectItem key={profile.id} value={String(profile.id)}>
+                          {profile.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
+          <div>
+            <Controller
+              name="gestationalWeek"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-2 justify-between bg-red-200">
+                  <div className="text-sm font-medium">Semana gestacional</div>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gestational week" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {GESTATIONAL_WEEKS.map((week) => (
+                        <SelectItem
+                          key={week.numero}
+                          value={String(week.numero)}
+                        >
+                          {week.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </FieldLabel>
+              )}
+            />
+          </div>
+        </div>
+        <div>
+          <CreateCustomerDialog />
+        </div>
 
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Select customer" />
-                </SelectTrigger>
-                <SelectContent position="item-aligned">
-                  {profiles.map((profile) => (
-                    <SelectItem key={profile.id} value={String(profile.id)}>
-                      {profile.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          name="gestationalWeek"
-          control={control}
-          render={({ field }) => (
-            <div className="flex flex-col gap-2">
-              <div className="text-sm font-medium">Semana gestacional</div>
-
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select gestational week" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  {GESTATIONAL_WEEKS.map((week) => (
-                    <SelectItem key={week.numero} value={String(week.numero)}>
-                      {week.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        />
         <Controller
           name="description"
           control={control}
