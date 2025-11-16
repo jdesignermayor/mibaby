@@ -14,39 +14,39 @@ export default function ViewModePanel() {
       <Button
         variant="ghost"
         onClick={() => setViewMode("split")}
-        className={`flex text-md items-center gap-2 px-4 py-2 font-medium transition-all rounded-md ${
+        className={`flexitems-center gap-2 px-4 py-2 font-medium transition-all rounded-md ${
           viewMode === "split"
             ? "text-primary bg-primary/10"
             : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
         }`}
       >
-        <LayoutPanelLeftIcon className="size-7" />
+        <LayoutPanelLeftIcon className="size-5" />
         Vista dividida
       </Button>
 
       <Button
         variant="ghost"
         onClick={() => setViewMode("original")}
-        className={`flex  text-md items-center gap-2 px-4 py-2 font-medium transition-all ${
+        className={`flex items-center gap-2 px-4 py-2 font-medium transition-all ${
           viewMode === "original"
             ? "text-primary bg-primary/10"
             : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
         }`}
       >
-        <Rotate3dIcon className="size-7" />
+        <Rotate3dIcon className="size-5" />
         3D original
       </Button>
 
       <Button
         variant="ghost"
         onClick={() => setViewMode("hyper")}
-        className={`flex  text-md items-center gap-2 px-4 py-2 font-medium transition-all ${
+        className={`flex items-center gap-2 px-4 py-2 font-medium transition-all ${
           viewMode === "hyper"
             ? "text-primary bg-primary/10"
             : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
         }`}
       >
-        <SparklesIcon className="size-7" />
+        <SparklesIcon className="size-5" />
         Hiperrealista
       </Button>
     </div>

@@ -4,20 +4,19 @@ import type { ImageSetItem } from "@/models/illustration.model";
 import Image from "next/image";
 
 export default function ImageSelectorToggleCard({
-  image,
+  details,
   isSelected,
 }: {
-  image: ImageSetItem;
+  details: ImageSetItem;
   isSelected: boolean;
 }) {
   return (
-    <Card
+    <div
       className={cn(
-        "hover:opacity-30 cursor-pointer",
+        "hover:opacity-30 cursor-pointer flex p-2 border gap-2.5 items-center rounded-md",
         isSelected && "opacity-30",
       )}
     >
-      <CardContent className="flex flex-row gap-2">
         <div>
           <div className="relative w-20 h-14 shrink-0 rounded bg-black overflow-hidden border border-slate-300 dark:border-slate-700">
             <div className="absolute inset-0 w-1/2">
@@ -25,7 +24,7 @@ export default function ImageSelectorToggleCard({
                 alt="3D"
                 fill={true}
                 className="object-cover"
-                src={image.images.base}
+                src={details.images.base}
               />
             </div>
             <div className="absolute inset-0 left-1/2">
@@ -33,17 +32,16 @@ export default function ImageSelectorToggleCard({
                 alt="AI"
                 fill={true}
                 className="object-cover"
-                src={image.images.converted}
+                src={details.images.converted}
               />
             </div>
             <div className="absolute inset-y-0 left-1/2 w-px bg-white/60"></div>
           </div>
         </div>
         <div>
-          <p className="text-sm font-bold">{image.description}</p>
-          <p className="text-sm text-muted-foreground">{image.gestationalWeek}</p>
+          <p className="text-sm font-bold">{details.description}</p>
+          <p className="text-sm text-muted-foreground">{details.gestationalWeek}</p>
         </div>
-      </CardContent>
-    </Card>
+     </div>
   );
 }

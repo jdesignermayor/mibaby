@@ -3,8 +3,7 @@ import CreateIllustrationHeader from "@/components/features/create-illustration/
 
 export default function CreateIllustration() {
   return (
-    <div className="flex flex-col w-full h-full">
-      <CreateIllustrationHeader />
+    <div className="flex flex-col w-full h-[calc(100dvh)]">
       <CreateIllustationLayer />
     </div>
   );

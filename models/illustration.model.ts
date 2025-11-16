@@ -26,6 +26,7 @@ export interface ImageSetItem {
   id: string;
   description: string;
   gestationalWeek: string;
+  isReady: boolean;
   images: {
     base: string;
     converted: string;

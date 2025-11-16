@@ -37,6 +37,9 @@
       ],
       "@/shared-stores/*": [
         "./stores/shared/*"
+      ],
+      "@/actions/*": [
+        "./app/actions/*"
       ]
     }
   },

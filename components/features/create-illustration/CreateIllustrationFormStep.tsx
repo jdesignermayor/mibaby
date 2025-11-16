@@ -21,12 +21,14 @@ import {
 } from "@/ui-components/field";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
-import { SparkleIcon, TrashIcon } from "lucide-react";
+import { PlusIcon, SparkleIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import CreateCustomerDialog from "../create-profile/CreateProfileForm";
+
+import { createIllustration } from "@/actions/illustration";
 
 const imageSchema = z.object({
   name: z.string(),
@@ -54,6 +56,7 @@ export const GESTATIONAL_WEEKS = Array.from({ length: 7 }, (_, i) => ({
 export default function CreateIllustrationForm() {
   const { data: profiles } = useCompany();
   const [_, setUISettings] = useAtom(uiSettingsAtomState);
+  
 
   const [isImageDuplicatedError, setIsImageDuplicatedError] = useState(false);
   const {
@@ -73,16 +76,26 @@ export default function CreateIllustrationForm() {
   });
 
   const [base64Images, setBase64Images] = useState<ImageFormat[]>([]);
+  const [isUploadingState, setIsUploadingState] = useState(base64Images.length === 0);
   const [isDragging, setIsDragging] = useState(false);
 
-  const onSubmit = (_data: unknown) => {
-    setUISettings((prev) => ({
-      ...prev,
-      stepper: {
-        ...prev.stepper,
-        currentStep: prev.stepper.currentStep + 1,
-      },
-    }));
+  const onSubmit = async (formValues: FormSchema) => {
+    // setUISettings((prev) => ({
+    //   ...prev,
+    //   stepper: {
+    //     ...prev.stepper,
+    //     currentStep: prev.stepper.currentStep + 1,
+    //   },
+    // }));
+
+    const formData = new FormData();
+    formData.append('customerId', formValues.customerId);
+    formData.append('description', formValues.description);
+    formData.append('gestationalWeek', formValues.gestationalWeek);
+    formData.append('images', JSON.stringify(formValues.images));
+
+    const data = await createIllustration(formData);
+    console.log("data:", data);
   };
 
   const processFiles = (files: FileList | File[]) => {
@@ -152,7 +165,7 @@ export default function CreateIllustrationForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" className="grid h-[calc(90dvh-100px)] overflow-x-scroll">
       <FieldGroup className="flex flex-col gap-5">
         <Controller
           name="images"
@@ -174,57 +187,57 @@ export default function CreateIllustrationForm() {
             </Field>
           )}
         />
-        {/* drag and drop image area using tailwind */}
-        <button
-          type="button"
-          onClick={handleClick}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          aria-label="Subir imágenes haciendo clic o arrastrando y soltando"
-          className={`relative w-full cursor-pointer transition-colors duration-200 border-2 border-dashed rounded-xl p-8 hover:bg-muted/50 border-muted-foreground/25 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-            isDragging ? "bg-muted/70 border-primary" : ""
-          }`}
-        >
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="p-4 rounded-full bg-muted">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-upload size-8 text-muted-foreground"
-                aria-hidden="true"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" x2="12" y1="3" y2="15"></line>
-              </svg>
+        {base64Images.length === 0 && (
+          <button
+            type="button"
+            onClick={handleClick}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            aria-label="Subir imágenes haciendo clic o arrastrando y soltando"
+            className={`relative w-full cursor-pointer transition-colors duration-200 border-2 border-dashed rounded-xl p-3 hover:bg-muted/50 border-muted-foreground/25 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${isDragging ? "bg-muted/70 border-primary" : ""
+              }`} >
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="p-5 rounded-full bg-muted">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-upload size-8 text-muted-foreground"
+                  aria-hidden="true"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" x2="12" y1="3" y2="15"></line>
+                </svg>
+              </div>
+              <div>
+                <p className="text-lg font-semibold">
+                  {isDragging ? "Soltar aquí" : "Subir imágenes"}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {isDragging
+                    ? "Suelta los archivos para subirlos"
+                    : "Arrastra y suelta o haz clic para seleccionar"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Formatos: JPG, PNG, GIF, WebP • Máximo 5 imágenes • Máximo 4MB
+                  por imagen
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-lg font-semibold">
-                {isDragging ? "Soltar aquí" : "Subir imágenes"}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {isDragging
-                  ? "Suelta los archivos para subirlos"
-                  : "Arrastra y suelta o haz clic para seleccionar"}
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Formatos: JPG, PNG, GIF, WebP • Máximo 5 imágenes • Máximo 4MB
-                por imagen
-              </p>
-            </div>
-          </div>
-        </button>
+          </button>
+        )}
+
+        {base64Images.length > 0 && (
         <div className="flex flex-wrap gap-2  overflow-y-scroll">
-          {base64Images.length > 0 &&
-            base64Images.map((img, index) => {
+          {base64Images.map((img, index) => {
               return (
                 <div key={String(index)} className="relative">
                   <Button
@@ -247,7 +260,7 @@ export default function CreateIllustrationForm() {
                     alt="image"
                     width={300}
                     height={300}
-                    className=" w-40 h-40 rounded-md"
+                    className=" w-30 h-30 rounded-md object-cover border"
                   />
                 </div>
               );
@@ -257,7 +270,13 @@ export default function CreateIllustrationForm() {
               errors={[{ message: "The image is already in the list" }]}
             />
           )}
+          <div className=" w-30 h-30 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
+          >
+            <PlusIcon />
+          </div>
         </div>
+        )}
+        
         <div className="flex gap-2">
           <div>
             <Controller
@@ -301,7 +320,7 @@ export default function CreateIllustrationForm() {
               name="gestationalWeek"
               control={control}
               render={({ field }) => (
-                <div className="flex flex-col gap-2 justify-between bg-red-200">
+                <div className="flex flex-col gap-2 justify-between ">
                   <div className="text-sm font-medium">Semana gestacional</div>
                   <Select
                     onValueChange={field.onChange}
