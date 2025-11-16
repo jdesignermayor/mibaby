@@ -19,7 +19,7 @@ export default function ImageSelectorToggleCard({
     >
       <CardContent className="flex flex-row gap-2">
         <div>
-          <div className="relative w-12 h-12 shrink-0 rounded bg-black overflow-hidden border border-slate-300 dark:border-slate-700">
+          <div className="relative w-20 h-14 shrink-0 rounded bg-black overflow-hidden border border-slate-300 dark:border-slate-700">
             <div className="absolute inset-0 w-1/2">
               <Image
                 alt="3D"
@@ -40,8 +40,8 @@ export default function ImageSelectorToggleCard({
           </div>
         </div>
         <div>
-          <p>{image.description}</p>
-          <p>{image.gestationalWeek}</p>
+          <p className="text-sm font-bold">{image.description}</p>
+          <p className="text-sm text-muted-foreground">{image.gestationalWeek}</p>
         </div>
       </CardContent>
     </Card>

@@ -66,7 +66,7 @@ const mockedImages: ImageSetItem[] = [
 ];
 export default function ImageSelectorCard() {
   return (
-    <Card className=" min-w-96">
+    <Card className="  w-80">
       <CardContent>
         <div>
           <p>Imagenes procesadas</p>

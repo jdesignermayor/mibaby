@@ -19,7 +19,7 @@ export default function CreateIllustationLayer() {
       <div
         className={`flex ${isDelivering ? "" : "justify-center items-center "}p-5`}
       >
-        <div className="grid gap-4 lg:w-2/4 h-full xl:w-2/5 py-16">
+        <div className="grid lg:w-2/4 h-full xl:w-2/5">
           <div className="flex flex-col gap-2">
             <div className="flex items-center">
               <p className="font-bold text-2xl">
