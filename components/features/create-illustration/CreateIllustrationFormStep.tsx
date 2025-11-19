@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useCompany } from "@/hooks/use-company";
-import type { ImageFormat } from "@/models/illustration.model";
+import type {
+  Illustration,
+  ImageFormat,
+  ImageUploaded,
+} from "@/models/illustration.model";
 import { uiSettingsAtomState } from "@/stores/shared/ui-settings-store";
 import {
   Field,
@@ -23,18 +27,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAtom } from "jotai";
 import { PlusIcon, SparkleIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import CreateCustomerDialog from "../create-profile/CreateProfileForm";
 
 import { createIllustration } from "@/actions/illustration";
+import { Spinner } from "@/components/ui/spinner";
+import { createIllustrationAtomState } from "@/stores/shared/create-illustration.store";
+import { supabase } from "@/utils/supabase/supabaseClient";
+import { toast } from "sonner";
+
+const BUCKET_NAME = "unprocessed_images";
 
 const imageSchema = z.object({
   name: z.string(),
-  base64: z.string().regex(/^data:image\/(png|jpg|jpeg);base64,/, {
-    message: "Invalid base64 image.",
-  }),
+  base64: z.string().optional(),
+  path: z.string().optional(),
+  isUploaded: z.boolean().optional(),
 });
 
 const formSchema = z.object({
@@ -55,10 +65,13 @@ export const GESTATIONAL_WEEKS = Array.from({ length: 7 }, (_, i) => ({
 
 export default function CreateIllustrationForm() {
   const { data: profiles } = useCompany();
-  const [_, setUISettings] = useAtom(uiSettingsAtomState);
+  const [, setUISettings] = useAtom(uiSettingsAtomState);
+  const [, setCreateIllustration] = useAtom(createIllustrationAtomState);
+  const [isLoading, setIsLoading] = useState(false);
+  const [base64Images, setBase64Images] = useState<ImageFormat[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-
-  const [isImageDuplicatedError, setIsImageDuplicatedError] = useState(false);
   const {
     control,
     handleSubmit,
@@ -75,24 +88,18 @@ export default function CreateIllustrationForm() {
     },
   });
 
-  const [base64Images, setBase64Images] = useState<ImageFormat[]>([]);
-  const [isUploadingState, setIsUploadingState] = useState(base64Images.length === 0);
-  const [isDragging, setIsDragging] = useState(false);
-
   const onSubmit = async (formValues: FormSchema) => {
-
     const formData = new FormData();
-    formData.append('customerId', formValues.customerId);
-    formData.append('description', formValues.description);
-    formData.append('gestationalWeek', formValues.gestationalWeek);
-    formData.append('images', JSON.stringify(formValues.images));
-
-
+    formData.append("customerId", formValues.customerId);
+    formData.append("description", formValues.description);
+    formData.append("gestationalWeek", formValues.gestationalWeek);
+    formData.append("images", JSON.stringify(formValues.images));
 
     try {
+      setIsLoading(true);
       const result = await createIllustration(formData);
 
-      const { id } = result.data;
+      setIsLoading(false);
 
       setUISettings((prev) => ({
         ...prev,
@@ -102,42 +109,120 @@ export default function CreateIllustrationForm() {
         },
       }));
 
+      const illustration: Illustration = {
+        id: result.id,
+        userId: result.user_id,
+        profileId: result.profile_id,
+        description: result.description,
+        gestationalWeek: result.gestational_week,
+        avatarPictureUrl: result.avatar_picture_url,
+        images: result.images,
+        createdAt: new Date().toISOString(),
+      };
+
+      setCreateIllustration(illustration);
     } catch (error) {
-
+      toast.error("Error creating illustration");
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log("data:", data);
   };
 
-  const processFiles = (files: FileList | File[]) => {
+  const removeImage = async (index: number) => {
+    const currentImages = getValues("images");
+
+    // supabase delete image
+    const { path } = currentImages[index];
+
+    if (!path) {
+      toast.error("Path is required");
+      return;
+    }
+
+    try {
+      await supabase.storage.from(BUCKET_NAME).remove([path]);
+      const updatedImages = currentImages.filter((_, i) => i !== index);
+      setValue("images", updatedImages);
+      toast.success("Image removed");
+    } catch (error) {
+      toast.error("Error removing image");
+    }
+  };
+
+  const processFiles = async (files: FileList | File[]) => {
     if (!files || files.length === 0) return;
 
+    // copia local que podemos usar inmediatamente
+    let updatedImages = [...base64Images];
+
     for (const file of Array.from(files)) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
+      if (!file.name.match(/\.(jpg|png)$/i)) {
+        toast.error("Only JPG and PNG files are allowed");
+        continue;
+      }
 
-      reader.onload = () => {
-        const image: ImageFormat = {
-          name: file.name,
-          base64: reader.result as string,
-        };
+      if (file.size > 1 * 1024 * 1024) {
+        toast.error("File size must be less than 1MB");
+        continue;
+      }
 
-        // Obtener SIEMPRE el array actualizado del form
-        const currentImages = getValues("images") || [];
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
 
-        // Agregar la nueva imagen SIN perder las anteriores
-        setValue("images", [...currentImages, image], {
+      const image: ImageFormat = {
+        name: file.name,
+        base64,
+        isUploaded: false,
+      };
+
+      updatedImages = [...updatedImages, image];
+
+      setBase64Images(updatedImages);
+
+      startTransition(async () => {
+        const { path } = await uploadImageToBucket(base64);
+
+        updatedImages = updatedImages.map((img) =>
+          img.name === file.name ? { ...img, path, isUploaded: true } : img,
+        );
+
+        setBase64Images(updatedImages);
+
+        const cleanedForForm = updatedImages.map((img) => ({
+          ...img,
+          base64: "",
+        }));
+
+        // 7. Actualizamos el formulario
+        setValue("images", cleanedForForm, {
           shouldDirty: true,
           shouldTouch: true,
           shouldValidate: true,
         });
-
-        // (Opcional) si mantienes un estado local
-        setBase64Images((imgs) => [...imgs, image]);
-
-        setIsImageDuplicatedError(false);
-      };
+      });
     }
+  };
+
+  const uploadImageToBucket = async (image: string): Promise<ImageUploaded> => {
+    const base64WithoutPrefix = image.split("base64,")[1];
+    const filePath = `public/${Date.now()}-${Math.random().toString(36).substring(2, 15)}_UNPROCESSED.jpg`;
+
+    const imagesUploaded = await supabase.storage
+      .from("unprocessed_images")
+      .upload(filePath, Buffer.from(base64WithoutPrefix, "base64"), {
+        contentType: "image/jpg",
+        upsert: false,
+      });
+
+    if (imagesUploaded.error) {
+      toast.error("Error uploading image to bucket");
+    }
+    toast.success("Image uploaded to bucket");
+
+    return imagesUploaded.data as ImageUploaded;
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +261,11 @@ export default function CreateIllustrationForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" className="grid h-[calc(90dvh-100px)] overflow-x-scroll">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      encType="multipart/form-data"
+      className="grid h-[calc(90dvh-100px)] overflow-x-scroll"
+    >
       <FieldGroup className="flex flex-col gap-5">
         <Controller
           name="images"
@@ -206,8 +295,10 @@ export default function CreateIllustrationForm() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             aria-label="Subir imágenes haciendo clic o arrastrando y soltando"
-            className={`relative w-full cursor-pointer transition-colors duration-200 border-2 border-dashed rounded-xl p-3 hover:bg-muted/50 border-muted-foreground/25 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${isDragging ? "bg-muted/70 border-primary" : ""
-              }`} >
+            className={`relative w-full cursor-pointer transition-colors duration-200 border-2 border-dashed rounded-xl p-3 hover:bg-muted/50 border-muted-foreground/25 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+              isDragging ? "bg-muted/70 border-primary" : ""
+            }`}
+          >
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="p-5 rounded-full bg-muted">
                 <svg
@@ -250,7 +341,10 @@ export default function CreateIllustrationForm() {
           <div className="flex flex-wrap gap-2  overflow-y-scroll">
             {base64Images.map((img, index) => {
               return (
-                <div key={String(index)} className="relative">
+                <div
+                  key={String(index)}
+                  className={`flex flex-col gap-2 relative ${!img.isUploaded && "opacity-50"}`}
+                >
                   <Button
                     type="button"
                     variant={"ghost"}
@@ -259,7 +353,7 @@ export default function CreateIllustrationForm() {
                         (_, i) => i !== index,
                       );
                       setBase64Images(filteredImages);
-                      setValue("images", filteredImages);
+                      removeImage(index);
                     }}
                     className=" top-0 right-0 p-2 absolute text-white"
                   >
@@ -276,15 +370,14 @@ export default function CreateIllustrationForm() {
                 </div>
               );
             })}
-            {isImageDuplicatedError && (
-              <FieldError
-                errors={[{ message: "The image is already in the list" }]}
-              />
-            )}
-            <div className=" w-30 h-30 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleClick}
+              className=" cursor-pointer w-30 h-30 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
             >
               <PlusIcon />
-            </div>
+            </Button>
           </div>
         )}
 
@@ -379,8 +472,12 @@ export default function CreateIllustrationForm() {
             </Field>
           )}
         />
-        <Button size="lg" className="w-full h-12 text-lg" disabled={!isValid}>
-          <SparkleIcon />
+        <Button
+          size="lg"
+          className="w-full h-12 text-lg cursor-pointer"
+          disabled={!isValid && !isLoading && !isPending}
+        >
+          {isLoading ? <Spinner className="size-4" /> : <SparkleIcon />}
           Generar ecografias realistas
         </Button>
       </FieldGroup>

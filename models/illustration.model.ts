@@ -6,34 +6,54 @@ export const SEMANTIC_STEP_PHASE = {
 export interface ImageFormat {
   name: string;
   base64: string;
+  path?: string;
+  isUploaded: boolean;
 }
 
-interface StepperStep {
-  title: string;
-  description: string;
+export interface IllustrationImage {
+  id: string;
+  url: string;
+  createdAt: string;
 }
 
 export interface Illustration {
   id: string;
-  customerId: string;
+  userId: string;
+  profileId: string;
   description: string;
-  images: ImageFormat[];
-  gestational_week?: string;
-  avatar_picture?: {
-    name: string;
-    base64: string;
-  };
+  images: ImageUploaded[];
+  gestationalWeek?: string;
+  avatarPictureUrl?: string;
   createdAt: string;
-  stepperSteps?: StepperStep[];
+}
+
+export interface IllustrationSchema {
+  id: string;
+  created_at: string;
+  user_id: string;
+  profile_id: string;
+  description: string;
+  gestational_week: string;
+  images: ImageUploaded[];
+  avatar_picture_url: string;
+}
+
+export interface ResponsePostIllustrationSchema {
+  id: string;
 }
 
 export interface ImageSetItem {
   id: string;
-  description: string;
-  gestationalWeek: string;
   isReady: boolean;
   images: {
     base: string;
     converted: string;
   };
+}
+
+export interface ImageUploaded {
+  id: string;
+  path: string;
+  fullPath: string;
+  publicUrl: string;
 }
