@@ -1,13 +1,12 @@
-import { Card, CardContent } from "@/components/ui/card";
+"use client";
+
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ImageSetItem } from "@/models/illustration.model";
 import ImageSelectorToggleCard from "./ImageSelectorToggleCard";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const mockedImages: ImageSetItem[] = [
   {
     id: "1",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
     images: {
       base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
       converted:
@@ -17,8 +16,6 @@ const mockedImages: ImageSetItem[] = [
   },
   {
     id: "2",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
     images: {
       base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
       converted:
@@ -28,8 +25,6 @@ const mockedImages: ImageSetItem[] = [
   },
   {
     id: "3",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
     images: {
       base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
       converted:
@@ -39,8 +34,6 @@ const mockedImages: ImageSetItem[] = [
   },
   {
     id: "4",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
     images: {
       base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
       converted:
@@ -50,8 +43,6 @@ const mockedImages: ImageSetItem[] = [
   },
   {
     id: "5",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
     images: {
       base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
       converted:
@@ -61,8 +52,6 @@ const mockedImages: ImageSetItem[] = [
   },
   {
     id: "6",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
     images: {
       base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
       converted:
@@ -71,7 +60,11 @@ const mockedImages: ImageSetItem[] = [
     isReady: false,
   },
 ];
-export default function ImageSelectorCard() {
+export default function ImageSelectorCard({
+  uploadedImages,
+}: {
+  uploadedImages: ImageSetItem[];
+}) {
   return (
     <div className="flex flex-col gap-2 border p-4 rounded-md w-[250px] h-[81dvh]">
       <div className=" text-sm">
@@ -79,7 +72,7 @@ export default function ImageSelectorCard() {
         <p>10 escaneos</p>
       </div>
       <div className="grid grid-col gap-3 overflow-y-scroll">
-        {mockedImages.map((item) => (
+        {uploadedImages.map((item) =>
           item.isReady ? (
             <ImageSelectorToggleCard
               key={item.id}
@@ -93,9 +86,8 @@ export default function ImageSelectorCard() {
                 <p className="text-sm">Generando imagen...</p>
               </Skeleton>
             </div>
-          )
-
-        ))}
+          ),
+        )}
       </div>
     </div>
   );

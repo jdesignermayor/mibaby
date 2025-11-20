@@ -1,49 +1,35 @@
 "use client";
 
-import { getIllustrations } from "@/app/actions/illustration";
-import { Card, CardContent } from "@/components/ui/card";
-import { Illustration } from "@/models/illustration.model";
-import { supabase } from "@/utils/supabase/supabaseClient";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-
 export default function ListCurrentIllustrations() {
-    const [illustrations, setIllustrations] = useState<Illustration[]>([]);
-
-   useEffect(() => {
-    const fetchData = async () => {
-        const { data, error } = await supabase.from('tbl_illustrations').select('*').order('created_at', { ascending: false });
-        if (error) {
-            console.error("Error fetching data:", error);
-        } else {
-            setIllustrations(data);
-            console.log("data:", data);
-        }
-    };
-    fetchData();
-   }, []);
-
-    return (
-        <div>
-           <div className="flex gap-3 w-[78dvw] overflow-y-scroll">
-           {illustrations && illustrations?.map((item: Illustration, index: number) => (<div className="grid gap-3" key={index}>
-              <Card key={index} className=" w-70 h-40 bg-gray-100 relative overflow-hidden rounded-lg text-white border-none">
-                <CardContent className="w-full h-full flex justify-center items-center ">
-                  <Image
-                    className="w-full h-full object-cover"
-                    src={item.avatar_picture?.base64 || 'https://i.imgflip.com/1o0ska.jpg?a489600'}
-                    alt="Card Image"
-                    width={500}
-                    height={500}
-                  />
-                </CardContent>
-              </Card>
-              <div>
-                <p className="font-bold">Bebebe de johana</p>
-                <p className=" text-gray-500">sadasdasdsadasdasdasd </p>
-              </div>
-            </div>))}
-           </div>
-        </div>
-    );
+  return (
+    <div>
+      <div className="flex gap-3 w-[78dvw] overflow-y-scroll">
+        {/* {illustrations?.map((item: Illustration, index: number) => (
+          <div className="grid gap-3" key={index}>
+            <Card
+              key={index}
+              className=" xl:w-80 w-70 h-40 xl:h-70 bg-gray-100 relative overflow-hidden rounded-lg text-white border-none"
+            >
+              <CardContent className="w-full h-full flex justify-center items-center ">
+                <Image
+                  className="w-full h-full object-cover"
+                  src={
+                    item.avatar_picture?.base64 ||
+                    "https://i.imgflip.com/1o0ska.jpg?a489600"
+                  }
+                  alt="Card Image"
+                  width={500}
+                  height={500}
+                />
+              </CardContent>
+            </Card>
+            <div>
+              <p className="font-bold">Bebebe de johana</p>
+              <p className=" text-gray-500">sadasdasdsadasdasdasd </p>
+            </div>
+          </div>
+        ))} */}
+      </div>
+    </div>
+  );
 }

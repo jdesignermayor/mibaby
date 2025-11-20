@@ -36,6 +36,7 @@ import { createIllustration } from "@/actions/illustration";
 import { Spinner } from "@/components/ui/spinner";
 import { createIllustrationAtomState } from "@/stores/shared/create-illustration.store";
 import { supabase } from "@/utils/supabase/supabaseClient";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const BUCKET_NAME = "unprocessed_images";
@@ -64,6 +65,7 @@ export const GESTATIONAL_WEEKS = Array.from({ length: 7 }, (_, i) => ({
 }));
 
 export default function CreateIllustrationForm() {
+  const router = useRouter();
   const { data: profiles } = useCompany();
   const [, setUISettings] = useAtom(uiSettingsAtomState);
   const [, setCreateIllustration] = useAtom(createIllustrationAtomState);
@@ -121,8 +123,12 @@ export default function CreateIllustrationForm() {
       };
 
       setCreateIllustration(illustration);
+      router.push(`/dashboard/create-illustration/${result.id}`);
+      toast.success("Illustration loaded successfully");
     } catch (error) {
-      toast.error("Error creating illustration");
+      toast.error("Error creating illustration", {
+        position: "top-center",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +163,9 @@ export default function CreateIllustrationForm() {
 
     for (const file of Array.from(files)) {
       if (!file.name.match(/\.(jpg|png)$/i)) {
-        toast.error("Only JPG and PNG files are allowed");
+        toast.error("Only JPG and PNG files are allowed", {
+          position: "top-center",
+        });
         continue;
       }
 
@@ -264,7 +272,7 @@ export default function CreateIllustrationForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       encType="multipart/form-data"
-      className="grid h-[calc(90dvh-100px)] overflow-x-scroll"
+      className="grid"
     >
       <FieldGroup className="flex flex-col gap-5">
         <Controller
@@ -338,7 +346,7 @@ export default function CreateIllustrationForm() {
         )}
 
         {base64Images.length > 0 && (
-          <div className="flex flex-wrap gap-2  overflow-y-scroll">
+          <div className="flex flex-wrap gap-2 overflow-hidden">
             {base64Images.map((img, index) => {
               return (
                 <div

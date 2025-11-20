@@ -63,12 +63,13 @@ export async function createIllustration(formData: FormData) {
   };
 }
 
-export async function getIllustrations() {
+export async function getIllustrationById(id: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("tbl_illustrations")
-    .select("*")
+    .select("id, description, gestational_week, images, avatar_picture_url")
+    .eq("id", id)
     .order("created_at", { ascending: false });
 
   console.log("data:", data);

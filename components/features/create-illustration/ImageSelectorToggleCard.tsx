@@ -11,37 +11,31 @@ export default function ImageSelectorToggleCard({
   isSelected: boolean;
 }) {
   return (
-    <div
+    <Card
       className={cn(
-        "hover:opacity-30 cursor-pointer flex p-2 border gap-2.5 items-center rounded-md",
+        "hover:opacity-30 cursor-pointer flex p-2 border gap-2.5 rounded-md",
         isSelected && "opacity-30",
       )}
     >
-        <div>
-          <div className="relative w-20 h-14 shrink-0 rounded bg-black overflow-hidden border border-slate-300 dark:border-slate-700">
-            <div className="absolute inset-0 w-1/2">
-              <Image
-                alt="3D"
-                fill={true}
-                className="object-cover"
-                src={details.images.base}
-              />
-            </div>
-            <div className="absolute inset-0 left-1/2">
-              <Image
-                alt="AI"
-                fill={true}
-                className="object-cover"
-                src={details.images.converted}
-              />
-            </div>
-            <div className="absolute inset-y-0 left-1/2 w-px bg-white/60"></div>
-          </div>
+      <CardContent>
+        <div className="w-[70px] h-[70px] flex rounded">
+          <Image
+            alt="3D"
+            width={70}
+            height={70}
+            className="object-cover"
+            src={details.images.base}
+          />
+
+          <Image
+            alt="AI"
+            width={70}
+            height={70}
+            className="object-cover"
+            src={details.images.converted}
+          />
         </div>
-        <div>
-          <p className="text-sm font-bold">{details.description}</p>
-          <p className="text-sm text-muted-foreground">{details.gestationalWeek}</p>
-        </div>
-     </div>
+      </CardContent>
+    </Card>
   );
 }
