@@ -18,7 +18,7 @@ const initialValue: UISettings = {
       isActive: false,
       label: "Profiles",
       icon: "user-round",
-      link: "/dashboard/create-illustration",
+      link: "/dashboard/profiles",
     },
     {
       isActive: false,

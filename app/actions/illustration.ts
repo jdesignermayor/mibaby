@@ -1,5 +1,6 @@
 'use server';
 
+import { Profile } from "@/models/profile.model";
 import { createClient } from "@/utils/supabase/server";
 
 export async function createIllustration(formData: FormData) {
@@ -36,6 +37,33 @@ export async function createIllustration(formData: FormData) {
     return {
         data: data,
     };
+}
+
+export async function getProfiles({ limit = 10, page = 1, query = '', order = 'created_at', ascending = false }: { limit?: number, page?: number, query?: string, order?: string, ascending?: boolean }): Promise<Profile[]> {
+    const supabase = await createClient();
+    const from = (page - 1) * limit;
+    const to = from + limit;
+
+    try {
+        const req = supabase.from('tbl_profiles').select('*', { count: 'exact' }).range(from, to).order(order, { ascending: ascending }); 
+        
+        if(query !== '' && query) {
+            console.log("query:", query);
+            req.ilike('name', `%${query}%`);
+        }
+        
+        const { data, count, error } = await req;
+
+        if (error) {
+            throw new Error(error.message);
+        }
+        
+        return data as Profile[];
+
+    } catch (error: any | Error ) {
+        console.log("error:", error);
+        throw new Error(error.message);
+    }
 }
 
 export async function getIllustrations() {

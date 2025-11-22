@@ -5,11 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { getIllustrations } from "../actions/illustration";
 import { Suspense } from "react";
-import ListCurrentIllustrations from "@/components/features/create-illustration/ListCurrentIllustrations";
+import ListCurrentIllustrations from "@/components/features/illustrations/ListCurrentIllustrations";
 
 export default function Dashboard() {
-
-  
   return (
     <div className="flex flex-col gap-8 w-full p-5">
       <div className="grid gap-4">
