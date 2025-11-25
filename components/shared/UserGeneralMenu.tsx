@@ -54,10 +54,9 @@ export default function UserGeneralMenu() {
             {menuOptions.map((option) => {
               return (
                 <li key={option.label}>
-                  <Link href={option.link}>
+                  <Link href={option.link} onClick={() => setUISettings({ ...uiSettings, menuOptions: menuOptions.map((option) => ({ ...option, isActive: false })) })}>
                     <Button
-                      variant={"ghost"}
-                      size="lg"
+                      variant={"ghost"}   size="lg"
                       aria-label="Submit"
                       className={
                         "w-full flex justify-start cursor-pointer" +

@@ -17,7 +17,7 @@ export default function CreateIllustationLayer() {
   return (
     <div>
       <div
-        className={`flex ${isDelivering ? "" : "justify-center items-center "}p-5`}
+        className={`flex ${isDelivering ? "" : "justify-center items-center "} p-5`}
       >
         <div className={`grid ${!isDelivering ? "lg:w-2/4 h-full xl:w-2/5" : "w-full"}`}>
           <div className="flex flex-col gap-2">

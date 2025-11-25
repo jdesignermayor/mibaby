@@ -30,7 +30,7 @@ import Image from "next/image";
 import { useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
-import CreateCustomerDialog from "../create-profile/CreateProfileForm";
+import CreateCustomerDialog from "../profiles/CreateCustomerDialog";
 
 import { createIllustration } from "@/actions/illustration";
 import { Spinner } from "@/components/ui/spinner";

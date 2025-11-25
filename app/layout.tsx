@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import "./globals.css";
+import QueryProvider from "@/components/shared/QueryProvider";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -21,7 +22,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${quicksand.variable} antialiased`}>{children}</body>
+      <body className={`${quicksand.variable} antialiased`}>
+        <QueryProvider>{children}</QueryProvider></body>
     </html>
   );
 }

@@ -19,7 +19,7 @@ export default function CreateCustomerDialog() {
       z.object({
         name: z.string().nonempty("Name is required."),
         email: z.string().email("Invalid email."),
-        age: z.number().min(1, "Age must be greater than 0."),
+        age: z.number(),
         document: z.string().nonempty("Document is required."),
         phone: z.string().nonempty("Phone is required."),
       }),
@@ -27,11 +27,16 @@ export default function CreateCustomerDialog() {
     defaultValues: {
       name: "",
       email: "",
-      age: 0,
+      age: 1,
       document: "",
       phone: "",
     },
   });
+
+  const onSubmit = async (data: any) => {
+    console.log("data:", data);
+  };
+  
   return (
     <Dialog>
       {/* Botón que abre el popup */}
@@ -41,14 +46,13 @@ export default function CreateCustomerDialog() {
 
       {/* Contenido del popup */}
       <DialogContent className="sm:max-w-[425px] bg-white rounded-xl shadow-lg">
+      <form className="space-y-4 mt-4" onSubmit={handleSubmit(onSubmit)}>
         <DialogHeader>
           <DialogTitle>Crear nuevo cliente</DialogTitle>
           <DialogDescription>
             Completa la información y guarda los cambios.
           </DialogDescription>
         </DialogHeader>
-
-        <form className="space-y-4 mt-4">
           <Input
             type="text"
             placeholder="Nombre del cliente"
@@ -61,19 +65,19 @@ export default function CreateCustomerDialog() {
             className="w-full border rounded-md p-2"
             {...register("email")}
           />
-          <Input type="number" placeholder="Edad" {...register("age")} />
           <Input
             type="number"
             placeholder="Documento de identidad"
             {...register("document")}
           />
           <Input type="phone" placeholder="Teléfono" {...register("phone")} />
-        </form>
+        
 
         <DialogFooter className="mt-6 flex justify-end gap-2">
-          <Button variant="outline">Cancelar</Button>
+          <Button variant="outline" type="submit">Cancelar</Button>
           <Button>Guardar</Button>
         </DialogFooter>
+      </form>
       </DialogContent>
     </Dialog>
   );
