@@ -2,10 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { getIllustrations } from "../actions/illustration";
-import { Suspense } from "react";
-import ListCurrentIllustrations from "@/components/features/illustrations/ListCurrentIllustrations";
 
 export default function Dashboard() {
   return (
@@ -53,9 +49,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div>
-          <div className="flex gap-6">
-              <ListCurrentIllustrations />
-          </div>
+          <div className="flex gap-6"></div>
         </div>
       </div>
     </div>

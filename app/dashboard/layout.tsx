@@ -5,7 +5,6 @@ export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-  
     <div className="relative h-[calc(95vh)]">
       <div className="flex ">
         <div>
@@ -17,7 +16,7 @@ export default function DashboardLayout({
           </div>
         </div>
       </div>
-      <Toaster />
+      <Toaster position="top-center" />
     </div>
-  )
+  );
 }

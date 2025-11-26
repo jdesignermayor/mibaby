@@ -8,11 +8,15 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import Link from "next/link";
 
 import type { MenuOption } from "@/models/ui-settings.model";
-import { uiSettingsAtomState } from "@/stores/shared/ui-settings-store";
+import {
+  resetMenuOptionsAtom,
+  uiSettingsAtomState,
+} from "@/stores/shared/ui-settings-store";
 
 export default function UserGeneralMenu() {
   const [uiSettings, setUISettings] = useAtom(uiSettingsAtomState);
   const { menuOptions } = uiSettings;
+  const [, resetMenu] = useAtom(resetMenuOptionsAtom);
 
   const handleMenuOptionClick = (option: MenuOption) => {
     const computedOptions = menuOptions.map((currentOption) => {
@@ -32,7 +36,7 @@ export default function UserGeneralMenu() {
 
   return (
     <div className="flex flex-col w-72 h-[calc(100vh)] border-r p-3 gap-56">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2">
         <div>
           <div className="font-bold flex gap-2  text-xl">
             <p>Mire</p>
@@ -41,18 +45,15 @@ export default function UserGeneralMenu() {
         </div>
         <div className="flex flex-col gap-3">
           <UserTeamToggleButton />
-          <Link href="/dashboard/create-illustration">
+          <Link href="/dashboard/create-illustration" onClick={resetMenu}>
             <Button className="w-full cursor-pointer">
               <PaintbrushIcon />
-              Create illustration
+              Crear ecografía hiperrealista
             </Button>
           </Link>
         </div>
         <div>
-          <div>
-            <p>Dashboard</p>
-          </div>
-          <ul className="flex flex-col pt-3">
+          <ul className="flex flex-col pt-3 gap-1">
             {menuOptions.map((option) => {
               return (
                 <li key={option.label}>
@@ -81,7 +82,7 @@ export default function UserGeneralMenu() {
         <div>
           <Button variant={"outline"} className="w-full cursor-pointer">
             <PlusIcon />
-            Sign out
+            Cerrar sesión
           </Button>
         </div>
       </div>

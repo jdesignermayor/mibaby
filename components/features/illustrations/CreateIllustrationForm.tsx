@@ -85,7 +85,7 @@ export default function CreateIllustrationForm() {
     defaultValues: {
       customerId: "",
       gestationalWeek: "",
-      modelId: "",
+      modelId: MODELS[0].id,
       description: "",
       images: [],
     },
@@ -97,6 +97,7 @@ export default function CreateIllustrationForm() {
     formData.append("description", formValues.description);
     formData.append("gestationalWeek", formValues.gestationalWeek);
     formData.append("images", JSON.stringify(formValues.images));
+    formData.append("modelId", formValues.modelId);
 
     try {
       setIsLoading(true);
@@ -116,6 +117,8 @@ export default function CreateIllustrationForm() {
         id: result.id,
         userId: result.user_id,
         profileId: result.profile_id,
+        modelId: result.model_id,
+        processStatus: result.process_status,
         description: result.description,
         gestationalWeek: result.gestational_week,
         avatarPictureUrl: result.avatar_picture_url,
@@ -124,6 +127,7 @@ export default function CreateIllustrationForm() {
       };
 
       setCreateIllustration(illustration);
+      toast.success("Ecografía hiperrealista cargada correctamente.");
     } catch (error) {
       toast.error("Error creating illustration");
     } finally {

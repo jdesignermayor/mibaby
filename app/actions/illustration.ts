@@ -1,7 +1,16 @@
 "use server";
 
+import {
+  type Illustration,
+  ILLUSTRATION_STATUS,
+  type IllustrationSchema,
+  type ImageFormat,
+} from "@/models/illustration.model";
 import type { Profile } from "@/models/profile.model";
 import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
+
+const BUCKET_NAME = "unprocessed_images";
 
 export async function createIllustration(formData: FormData) {
   const supabase = await createClient();
@@ -25,7 +34,7 @@ export async function createIllustration(formData: FormData) {
       }
 
       return {
-        id: "",
+        id: Math.random().toString(36).substring(2, 15),
         path: path,
         fullPath: "",
         publicUrl: data.publicUrl,
@@ -40,6 +49,8 @@ export async function createIllustration(formData: FormData) {
     gestational_week: (formData.get("gestationalWeek") as string) || "",
     images: mappedImages,
     avatar_picture_url: mappedImages[0].publicUrl,
+    model_id: formData.get("modelId") as string,
+    process_status: ILLUSTRATION_STATUS.PENDING,
   };
 
   const { data, error } = await supabase
@@ -72,6 +83,7 @@ export async function getProfiles({
   ascending?: boolean;
 }): Promise<Profile[]> {
   const supabase = await createClient();
+
   const from = (page - 1) * limit;
   const to = from + limit;
 
@@ -87,33 +99,50 @@ export async function getProfiles({
       req.ilike("name", `%${query}%`);
     }
 
-    const { data, count, error } = await req;
+    const { data, error } = await req;
 
     if (error) {
       throw new Error(error.message);
     }
 
     return data as Profile[];
-  } catch (error: any | Error) {
+  } catch (error: Error) {
     console.log("error:", error);
     throw new Error(error.message);
   }
 }
 
-export async function getIllustrations() {
+export async function getIllustrationById(id: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("tbl_illustrations")
     .select("*")
-    .order("created_at", { ascending: false });
+    .eq("id", id)
+    .single();
 
-  console.log("data:", data);
-  if (error) {
-    throw new Error(error.message);
-  }
 
-  return data;
+    try {
+      if (error) {
+        return NextResponse.json({ error: error.message, data: null }, { status: 500 });
+      }
+
+      console.log("data:", data);
+      const computedIllustration: Illustration = {
+        id: data.id,
+        userId: data.user_id,
+        profileId: data.profile_id,
+        modelId: data.model_id,
+        processStatus: data.process_status,
+        description: data.description,
+        images: data.images,
+        createdAt: data.created_at,
+      }
+
+      return NextResponse.json({ data: computedIllustration }, { status: 200 });
+    } catch (error) {
+      return NextResponse.json({ error: {}, data: null }, { status: 500 });
+    }
 }
 
 export async function createIllustrationImage({
