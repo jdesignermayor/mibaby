@@ -7,26 +7,28 @@ import { PaintbrushIcon, PlusIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Link from "next/link";
 
+import type { MenuOption } from "@/models/ui-settings.model";
 import { uiSettingsAtomState } from "@/stores/shared/ui-settings-store";
 
 export default function UserGeneralMenu() {
   const [uiSettings, setUISettings] = useAtom(uiSettingsAtomState);
   const { menuOptions } = uiSettings;
 
-  const chats = [
-    {
-      id: 1,
-      name: "Customer name 1",
-      lastMessage: "Hello, how are you?",
-      lastMessageDate: "2023-03-01",
-    },
-    {
-      id: 2,
-      name: "Customer name 2",
-      lastMessage: "Hello, how are you?",
-      lastMessageDate: "2023-03-01",
-    },
-  ];
+  const handleMenuOptionClick = (option: MenuOption) => {
+    const computedOptions = menuOptions.map((currentOption) => {
+      let isActivated = false;
+
+      if (currentOption.label === option.label) {
+        isActivated = true;
+      }
+      return {
+        ...currentOption,
+        isActive: isActivated,
+      };
+    });
+
+    setUISettings({ ...uiSettings, menuOptions: computedOptions });
+  };
 
   return (
     <div className="flex flex-col w-72 h-[calc(100vh)] border-r p-3 gap-56">
@@ -54,9 +56,13 @@ export default function UserGeneralMenu() {
             {menuOptions.map((option) => {
               return (
                 <li key={option.label}>
-                  <Link href={option.link} onClick={() => setUISettings({ ...uiSettings, menuOptions: menuOptions.map((option) => ({ ...option, isActive: false })) })}>
+                  <Link
+                    href={option.link}
+                    onClick={() => handleMenuOptionClick(option)}
+                  >
                     <Button
-                      variant={"ghost"}   size="lg"
+                      variant={"ghost"}
+                      size="lg"
                       aria-label="Submit"
                       className={
                         "w-full flex justify-start cursor-pointer" +
@@ -72,29 +78,6 @@ export default function UserGeneralMenu() {
             })}
           </ul>
         </div>
-        {/* <div>
-          <div>
-            <p>Chats</p>
-          </div>
-          <ul className="flex flex-col pt-3">
-            {chats.map((chat) => {
-              return (
-                <li key={chat.id}>
-                  <Link href={""}>
-                    <Button
-                      variant={"ghost"}
-                      size="lg"
-                      aria-label="Submit"
-                      className={"w-full flex justify-start cursor-pointer"}
-                    >
-                      {chat.name}
-                    </Button>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div> */}
         <div>
           <Button variant={"outline"} className="w-full cursor-pointer">
             <PlusIcon />
