@@ -10,23 +10,40 @@ const initialValue: UISettings = {
   menuOptions: [
     {
       isActive: true,
-      label: "Home",
+      label: "Inicio",
       icon: "home",
       link: "/dashboard/",
     },
     {
       isActive: false,
-      label: "Profiles",
+      label: "Clientes",
       icon: "user-round",
       link: "/dashboard/profiles",
     },
     {
       isActive: false,
-      label: "Settings",
+      label: "Configuración",
       icon: "settings",
       link: "/dashboard/create-illustration",
     },
   ],
 };
+
+export const resetMenuOptionsAtom = atom(
+  null, // read
+  (get, set) => {
+    const current = get(uiSettingsAtomState);
+
+    const newOptions = current.menuOptions.map((opt) => ({
+      ...opt,
+      isActive: false,
+    }));
+
+    set(uiSettingsAtomState, {
+      ...current,
+      menuOptions: newOptions,
+    });
+  },
+);
 
 export const uiSettingsAtomState = atom(initialValue);
