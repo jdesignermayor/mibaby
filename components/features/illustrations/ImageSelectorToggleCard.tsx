@@ -1,47 +1,52 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import type { ImageSetItem } from "@/models/illustration.model";
+import { Card } from "@/components/ui/card";
+import type { ImageItem } from "@/models/illustration.model";
 import Image from "next/image";
+
+const BLUR_DATA_URL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mPk5uSuBwAA5gCg3ColJwAAAABJRU5ErkJggg==";
 
 export default function ImageSelectorToggleCard({
   details,
   isSelected,
 }: {
-  details: ImageSetItem;
+  details: ImageItem;
   isSelected: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "hover:opacity-30 cursor-pointer flex p-2 border gap-2.5 items-center rounded-md",
-        isSelected && "opacity-30",
-      )}
+    <Card
+      tabIndex={0}
+      className={`
+      relative cursor-pointer h-20 w-full overflow-hidden hover:opacity-80 hover:ring-3 hover:ring-primary rounded
+      ${isSelected ? "ring-2 ring-primary" : ""}
+    `}
     >
-        <div>
-          <div className="relative w-20 h-14 shrink-0 rounded bg-black overflow-hidden border border-slate-300 dark:border-slate-700">
-            <div className="absolute inset-0 w-1/2">
-              <Image
-                alt="3D"
-                fill={true}
-                className="object-cover"
-                src={details.images.base}
-              />
-            </div>
-            <div className="absolute inset-0 left-1/2">
-              <Image
-                alt="AI"
-                fill={true}
-                className="object-cover"
-                src={details.images.converted}
-              />
-            </div>
-            <div className="absolute inset-y-0 left-1/2 w-px bg-white/60"></div>
-          </div>
-        </div>
-        <div>
-          <p className="text-sm font-bold">{details.description}</p>
-          <p className="text-sm text-muted-foreground">{details.gestationalWeek}</p>
-        </div>
-     </div>
+      {/* IMG IZQUIERDA */}
+      <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
+        <Image
+          alt="3D"
+          src={details.images.base}
+          sizes="100vw"
+          priority={true}
+          blurDataURL={BLUR_DATA_URL}
+          placeholder="blur"
+          fill={true}
+          className="object-cover w-full h-full block!"
+        />
+      </div>
+
+      {/* IMG DERECHA */}
+      <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
+        <Image
+          alt="AI"
+          sizes="100vw"
+          placeholder="blur"
+          priority={true}
+          blurDataURL={BLUR_DATA_URL}
+          src={details.images.converted}
+          fill={true}
+          className="object-cover w-full h-full block!"
+        />
+      </div>
+    </Card>
   );
 }

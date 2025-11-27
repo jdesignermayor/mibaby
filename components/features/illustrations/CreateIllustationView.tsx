@@ -1,9 +1,23 @@
-"use client";
-
-import ImageSelectorCard from "./ImageSelectorCard";
+import type { Illustration, ImageItem } from "@/models/illustration.model";
+import ImageSelectorPanel from "./ImageSelectorCard";
 import ViewModePanel from "./ViewModePanel";
 
-export default function CreateIllustrationDeliveryStep({ id }: { id: string }) {
+export default function CreateIllustrationView({
+  illustration,
+}: {
+  illustration: Illustration;
+}) {
+  const computedImages: ImageItem[] = illustration.images.map((image) => {
+    return {
+      id: image.id,
+      isReady: false,
+      images: {
+        base: image.publicUrl,
+        converted: "",
+      },
+    };
+  });
+
   return (
     <div>
       <div className="flex w-full gap-6">
@@ -25,12 +39,12 @@ export default function CreateIllustrationDeliveryStep({ id }: { id: string }) {
           </div>
         </div>
         <div className="flex gap-2">
-          <ImageSelectorCard />
-          <div className="flex flex-col gap-2 border p-4 rounded-md w-[250px] h-[81dvh]">
+          <ImageSelectorPanel images={computedImages} />
+          {/* <div className="flex flex-col gap-2 border p-4 rounded-md w-[250px] h-[81dvh]">
             <div className=" text-sm">
               <p>Acciones rápidas</p>
             </div>
-            {/* <div className="grid gap-2">
+          <div className="grid gap-2">
               <Button>
                 <FolderDownIcon />
                 Descargar imagenes en zip
@@ -48,8 +62,8 @@ export default function CreateIllustrationDeliveryStep({ id }: { id: string }) {
                 />
                 Enviar imagenes Whatsapp
               </Button>
-            </div> */}
-          </div>
+            </div>
+          </div> */}
         </div>
       </div>
     </div>

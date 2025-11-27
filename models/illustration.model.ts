@@ -46,7 +46,7 @@ export interface ResponsePostIllustrationSchema {
   id: string;
 }
 
-export interface ImageSetItem {
+export interface ImageItem {
   id: string;
   isReady: boolean;
   images: {

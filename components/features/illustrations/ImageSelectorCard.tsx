@@ -1,85 +1,75 @@
-import { Card, CardContent } from "@/components/ui/card";
-import type { ImageSetItem } from "@/models/illustration.model";
-import ImageSelectorToggleCard from "./ImageSelectorToggleCard";
+import { getProcessedImage } from "@/app/actions/illustration";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { ImageItem } from "@/models/illustration.model";
+import { Suspense } from "react";
+import ImageSelectorToggleCard from "./ImageSelectorToggleCard";
 
-const mockedImages: ImageSetItem[] = [
-  {
-    id: "1",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
-    images: {
-      base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
-      converted:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/hyperrealistic-fetal-face-render-realistic-skin-to-0zw6ROSBcoi7KJX9zDbwhEUAw2t1H8.jpg",
-    },
-    isReady: true,
-  },
-  {
-    id: "2",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
-    images: {
-      base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
-      converted:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/hyperrealistic-fetal-face-render-realistic-skin-to-0zw6ROSBcoi7KJX9zDbwhEUAw2t1H8.jpg",
-    },
-    isReady: true,
-  },
-  {
-    id: "3",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
-    images: {
-      base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
-      converted:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/hyperrealistic-fetal-face-render-realistic-skin-to-0zw6ROSBcoi7KJX9zDbwhEUAw2t1H8.jpg",
-    },
-    isReady: true,
-  },
-  {
-    id: "4",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
-    images: {
-      base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
-      converted:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/hyperrealistic-fetal-face-render-realistic-skin-to-0zw6ROSBcoi7KJX9zDbwhEUAw2t1H8.jpg",
-    },
-    isReady: true,
-  },
-  {
-    id: "5",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
-    images: {
-      base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
-      converted:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/hyperrealistic-fetal-face-render-realistic-skin-to-0zw6ROSBcoi7KJX9zDbwhEUAw2t1H8.jpg",
-    },
-    isReady: false,
-  },
-  {
-    id: "6",
-    description: "Image description",
-    gestationalWeek: "semanas 36",
-    images: {
-      base: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/3d-ultrasound-technical-scan-orange-tones-technica-wRPVVAFMg8Er73Bzfl1U0nL9fcfXOs.jpg",
-      converted:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/hyperrealistic-fetal-face-render-realistic-skin-to-0zw6ROSBcoi7KJX9zDbwhEUAw2t1H8.jpg",
-    },
-    isReady: false,
-  },
-];
-export default function ImageSelectorCard() {
+const SkeletonImageSelector = () => {
   return (
-    <div className="flex flex-col gap-2 border p-4 rounded-md w-[250px] h-[81dvh]">
+    <div className="flex gap-2">
+      <Skeleton className="w-full h-18 flex items-center p-2">
+        <p className="text-sm">Generando imagen...</p>
+      </Skeleton>
+    </div>
+  );
+};
+
+async function ImageProcessor({ image }: { image: ImageItem }) {
+  const getImageInformation = async () => {
+    const processedImage = await getProcessedImage(image);
+    console.log("processedImage:", processedImage);
+    return processedImage;
+  };
+
+  const onRetry = async () => {
+    console.log("onRetry:", image.id);
+    const processedImage = await getImageInformation();
+    return processedImage;
+  };
+
+  try {
+    // 20% probabilidad de fallo
+    if (Math.random() < 0.3) throw new Error("falló");
+    const processedImage = await getImageInformation();
+
+    return (
+      <ImageSelectorToggleCard details={processedImage} isSelected={false} />
+    );
+  } catch {
+    return (
+      <p>
+        Error cargando {image.id}{" "}
+        <Button variant="outline" onClick={() => {}}>
+          Retry
+        </Button>
+      </p>
+    );
+  }
+}
+
+export default function ImageSelectorPanel({
+  images,
+}: {
+  images: ImageItem[];
+}) {
+  console.log("images:", images);
+
+  return (
+    <div className="flex flex-col gap-2 border p-4 rounded-md w-72 h-[81dvh]">
       <div className=" text-sm">
-        <p>Imagenes procesadas</p>
-        <p>10 escaneos</p>
+        <p className="font-bold">Imagenes de escaneo</p>
+        <p className="text-gray-500">{images?.length} escaneos</p>
       </div>
-      <div className="grid grid-col gap-3 overflow-y-scroll">
-        {mockedImages.map((item) => (
+      <div className="grid gap-2">
+        {images.map((item) => (
+          <Suspense fallback={<SkeletonImageSelector />} key={item.id}>
+            <ImageProcessor image={item} />
+          </Suspense>
+        ))}
+      </div>
+      {/* <div className="flex flex-col gap-3">
+        {images.map((item) =>
           item.isReady ? (
             <ImageSelectorToggleCard
               key={item.id}
@@ -87,16 +77,10 @@ export default function ImageSelectorCard() {
               isSelected={false}
             />
           ) : (
-            <div className="flex gap-2" key={item.id}>
-              <Skeleton className="w-20 h-14" />
-              <Skeleton className="w-full h-14 flex items-center p-2">
-                <p className="text-sm">Generando imagen...</p>
-              </Skeleton>
-            </div>
-          )
-
-        ))}
-      </div>
+            
+          ),
+        )}
+      </div> */}
     </div>
   );
 }

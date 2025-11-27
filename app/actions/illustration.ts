@@ -5,10 +5,10 @@ import {
   ILLUSTRATION_STATUS,
   type IllustrationSchema,
   type ImageFormat,
+  type ImageItem,
 } from "@/models/illustration.model";
 import type { Profile } from "@/models/profile.model";
 import { createClient } from "@/utils/supabase/server";
-import { NextResponse } from "next/server";
 
 const BUCKET_NAME = "unprocessed_images";
 
@@ -121,28 +121,39 @@ export async function getIllustrationById(id: string) {
     .eq("id", id)
     .single();
 
-
-    try {
-      if (error) {
-        return NextResponse.json({ error: error.message, data: null }, { status: 500 });
-      }
-
-      console.log("data:", data);
-      const computedIllustration: Illustration = {
-        id: data.id,
-        userId: data.user_id,
-        profileId: data.profile_id,
-        modelId: data.model_id,
-        processStatus: data.process_status,
-        description: data.description,
-        images: data.images,
-        createdAt: data.created_at,
-      }
-
-      return NextResponse.json({ data: computedIllustration }, { status: 200 });
-    } catch (error) {
-      return NextResponse.json({ error: {}, data: null }, { status: 500 });
+  try {
+    if (error) {
+      return { error: error.message, data: null };
     }
+
+    const computedIllustration: Illustration = {
+      id: data.id,
+      userId: data.user_id,
+      profileId: data.profile_id,
+      modelId: data.model_id,
+      processStatus: data.process_status,
+      description: data.description,
+      images: data.images,
+      createdAt: data.created_at,
+    };
+
+    return { data: computedIllustration, error: null };
+  } catch (error) {
+    return { error: error, data: null };
+  }
+}
+
+export async function getProcessedImage(imageData: ImageItem) {
+  const randomDelay = Math.floor(Math.random() * 3000) + 1000; // 1–4s
+  await new Promise((resolve) => setTimeout(resolve, randomDelay));
+
+  return {
+    ...imageData,
+    images: {
+      base: imageData.images.base,
+      converted: "/images/demo-image-transformed.jpg",
+    },
+  };
 }
 
 export async function createIllustrationImage({
