@@ -14,3 +14,11 @@ export interface AIModel {
   isDefault: boolean;
   isPremium: boolean;
 }
+
+export interface AIGenerateImageModelRequest {
+  illustrationId: string;
+  imageId: string;
+  modelId: string;
+  description: string;
+  gestationalWeek: string;
+}

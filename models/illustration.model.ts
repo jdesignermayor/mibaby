@@ -1,7 +1,11 @@
-export const SEMANTIC_STEP_PHASE = {
-  CREATIONAL: 1,
-  DELIVERING: 2,
-};
+export interface ImageDataFormat {
+  id: string;
+  isFinished: boolean;
+  images: {
+    unprocessed: ImageUploaded;
+    processed: ImageUploaded;
+  };
+}
 
 export interface ImageFormat {
   name: string;
@@ -37,7 +41,7 @@ export interface IllustrationSchema {
   profile_id: string;
   description: string;
   gestational_week: string;
-  images: ImageUploaded[];
+  images: ImageDataFormat[];
   avatar_picture_url: string;
   process_status: ILLUSTRATION_STATUS;
 }
@@ -51,12 +55,11 @@ export interface ImageItem {
   isReady: boolean;
   images: {
     base: string;
-    converted: string;
+    proc: string;
   };
 }
 
 export interface ImageUploaded {
-  id: string;
   path: string;
   fullPath: string;
   publicUrl: string;

@@ -4,14 +4,15 @@ import {
   type Illustration,
   ILLUSTRATION_STATUS,
   type IllustrationSchema,
+  type ImageDataFormat,
   type ImageFormat,
   type ImageItem,
+  type ImageUploaded,
 } from "@/models/illustration.model";
 import type { Profile } from "@/models/profile.model";
 import { createClient } from "@/utils/supabase/server";
 
-const BUCKET_NAME = "unprocessed_images";
-
+const UNPROCESSED_IMAGES_BUCKET = "unprocessed_images";
 export async function createIllustration(formData: FormData) {
   const supabase = await createClient();
 
@@ -26,7 +27,7 @@ export async function createIllustration(formData: FormData) {
       }
 
       const { data, error } = await supabase.storage
-        .from(BUCKET_NAME)
+        .from(UNPROCESSED_IMAGES_BUCKET)
         .getPublicUrl(path);
 
       if (error) {
@@ -34,7 +35,6 @@ export async function createIllustration(formData: FormData) {
       }
 
       return {
-        id: Math.random().toString(36).substring(2, 15),
         path: path,
         fullPath: "",
         publicUrl: data.publicUrl,
@@ -42,18 +42,35 @@ export async function createIllustration(formData: FormData) {
     }),
   );
 
+  const imageData: ImageDataFormat[] = mappedImages.map(
+    (image: ImageUploaded): ImageDataFormat => {
+      return {
+        id: Math.random().toString(36).substring(2, 15),
+        isFinished: false,
+        images: {
+          unprocessed: image,
+          processed: {
+            path: "",
+            fullPath: "",
+            publicUrl: "",
+          },
+        },
+      };
+    },
+  );
+
   const illustrationDetail: Omit<IllustrationSchema, "id" | "created_at"> = {
     user_id: "d4036871-7639-499d-bc22-8c37d0242a8a",
     profile_id: formData.get("customerId") as string,
     description: (formData.get("description") as string) || "",
     gestational_week: (formData.get("gestationalWeek") as string) || "",
-    images: mappedImages,
+    images: imageData,
     avatar_picture_url: mappedImages[0].publicUrl,
     model_id: formData.get("modelId") as string,
     process_status: ILLUSTRATION_STATUS.PENDING,
   };
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("tbl_illustrations")
     .insert(illustrationDetail)
     .select("id")
@@ -64,7 +81,7 @@ export async function createIllustration(formData: FormData) {
   }
 
   return {
-    id: data.id,
+    id: "sadsad",
     ...illustrationDetail,
   };
 }
