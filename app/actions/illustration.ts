@@ -6,7 +6,6 @@ import {
   type IllustrationSchema,
   type ImageDataFormat,
   type ImageFormat,
-  type ImageItem,
   type ImageUploaded,
 } from "@/models/illustration.model";
 import type { Profile } from "@/models/profile.model";

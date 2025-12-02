@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import type { ImageItem } from "@/models/illustration.model";
+import type { ImageDataFormat } from "@/models/illustration.model";
 import Image from "next/image";
 
 const BLUR_DATA_URL =
@@ -9,7 +9,7 @@ export default function ImageSelectorToggleCard({
   details,
   isSelected,
 }: {
-  details: ImageItem;
+  details: ImageDataFormat;
   isSelected: boolean;
 }) {
   return (
@@ -24,7 +24,7 @@ export default function ImageSelectorToggleCard({
       <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
         <Image
           alt="3D"
-          src={details.images.base}
+          src={details.images.unprocessed.publicUrl}
           sizes="100vw"
           priority={true}
           blurDataURL={BLUR_DATA_URL}
@@ -42,7 +42,7 @@ export default function ImageSelectorToggleCard({
           placeholder="blur"
           priority={true}
           blurDataURL={BLUR_DATA_URL}
-          src={details.images.converted}
+          src={details.images.processed.publicUrl}
           fill={true}
           className="object-cover w-full h-full block!"
         />

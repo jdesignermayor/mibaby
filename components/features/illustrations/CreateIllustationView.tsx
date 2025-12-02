@@ -1,4 +1,4 @@
-import type { Illustration, ImageItem } from "@/models/illustration.model";
+import type { Illustration } from "@/models/illustration.model";
 import ImageSelectorPanel from "./ImageSelectorCard";
 import ViewModePanel from "./ViewModePanel";
 
@@ -7,17 +7,6 @@ export default function CreateIllustrationView({
 }: {
   illustration: Illustration;
 }) {
-  const computedImages: ImageItem[] = illustration.images.map((image) => {
-    return {
-      id: image.id,
-      isReady: false,
-      images: {
-        base: image.publicUrl,
-        converted: "",
-      },
-    };
-  });
-
   return (
     <div>
       <div className="flex w-full gap-6">
@@ -39,7 +28,7 @@ export default function CreateIllustrationView({
           </div>
         </div>
         <div className="flex gap-2">
-          <ImageSelectorPanel images={computedImages} />
+          <ImageSelectorPanel illustration={illustration} />
           {/* <div className="flex flex-col gap-2 border p-4 rounded-md w-[250px] h-[81dvh]">
             <div className=" text-sm">
               <p>Acciones rápidas</p>
