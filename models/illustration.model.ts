@@ -1,6 +1,8 @@
 export interface ImageDataFormat {
   id: string;
   isFinished: boolean;
+  isFailed: boolean;
+  isPending: boolean;
   images: {
     unprocessed: ImageUploaded;
     processed: ImageUploaded;
@@ -27,7 +29,7 @@ export interface Illustration {
   modelId: string;
   processStatus: ILLUSTRATION_STATUS;
   description: string;
-  images: ImageUploaded[];
+  images: ImageDataFormat[];
   gestationalWeek?: string;
   avatarPictureUrl?: string;
   createdAt: string;
@@ -48,15 +50,6 @@ export interface IllustrationSchema {
 
 export interface ResponsePostIllustrationSchema {
   id: string;
-}
-
-export interface ImageItem {
-  id: string;
-  isReady: boolean;
-  images: {
-    base: string;
-    proc: string;
-  };
 }
 
 export interface ImageUploaded {
