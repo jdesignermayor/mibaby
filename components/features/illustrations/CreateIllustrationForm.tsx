@@ -36,9 +36,10 @@ import { createIllustration } from "@/actions/illustration";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import { BUCKET_NAME, MODELS } from "@/lib/utils";
-import { createIllustrationAtomState } from "@/stores/shared/create-illustration.store";
+import { illustrationAtomState } from "@/stores/features/illustration.store";
 import { supabase } from "@/utils/supabase/supabaseClient";
 import { AvatarFallback } from "@radix-ui/react-avatar";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const imageSchema = z.object({
@@ -66,9 +67,10 @@ export const GESTATIONAL_WEEKS = Array.from({ length: 7 }, (_, i) => ({
 }));
 
 export default function CreateIllustrationForm() {
+  const router = useRouter();
   const { data: profiles } = useCompany();
   const [, setUISettings] = useAtom(uiSettingsAtomState);
-  const [, setCreateIllustration] = useAtom(createIllustrationAtomState);
+  const [, setIllustrationState] = useAtom(illustrationAtomState);
   const [isLoading, setIsLoading] = useState(false);
   const [base64Images, setBase64Images] = useState<ImageFormat[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -126,7 +128,12 @@ export default function CreateIllustrationForm() {
         createdAt: new Date().toISOString(),
       };
 
-      setCreateIllustration(illustration);
+      setIllustrationState({
+        status: "pending",
+        illustration: illustration,
+      });
+
+      router.push(`/dashboard/create-illustration/${illustration.id}`);
       toast.success("Ecografía hiperrealista cargada correctamente.");
     } catch (error) {
       toast.error("Error creating illustration");
@@ -229,7 +236,12 @@ export default function CreateIllustrationForm() {
     }
     toast.success("Image uploaded to bucket");
 
-    return imagesUploaded.data as ImageUploaded;
+    console.log("image uploaded to bucket:", imagesUploaded.data);
+
+    const result: ImageUploaded | null =
+      imagesUploaded.data as ImageUploaded | null;
+
+    return result;
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
