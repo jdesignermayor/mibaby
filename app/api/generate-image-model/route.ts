@@ -1,7 +1,8 @@
 import type { AIGenerateImageModelRequest } from "@/models/ai.model";
-import type {
-  ImageDataFormat,
-  ImageUploaded,
+import {
+  ILLUSTRATION_STATUS,
+  type ImageDataFormat,
+  type ImageUploaded,
 } from "@/models/illustration.model";
 import { createClient } from "@/utils/supabase/server";
 import { GoogleGenAI } from "@google/genai";
@@ -54,8 +55,6 @@ export async function POST(request: Request) {
 
     const images: ImageDataFormat[] = illustrationData?.images || [];
 
-    console.log("images:", JSON.stringify(images, null, 2));
-
     const imageToProcess = images.find(
       (image: ImageDataFormat) => image.id === imageId,
     );
@@ -86,6 +85,8 @@ export async function POST(request: Request) {
           return {
             ...image,
             isFinished: true,
+            isFailed: false,
+            isPending: false,
             images: {
               ...image.images,
               processed: processedImageData,
@@ -97,10 +98,18 @@ export async function POST(request: Request) {
       },
     );
 
+    const isStatusCompleted = computedImages.every((image) => image.isFinished);
+
+    console.log("isStatusCompleted:", isStatusCompleted);
     // update the images in the database
     const { error: updateError } = await supabase
       .from("tbl_illustrations")
-      .update({ images: computedImages })
+      .update({
+        images: computedImages,
+        process_status: isStatusCompleted
+          ? ILLUSTRATION_STATUS.COMPLETED
+          : ILLUSTRATION_STATUS.PROCESSING,
+      })
       .eq("id", illustrationId);
 
     if (updateError) {
@@ -150,12 +159,4 @@ export async function POST(request: Request) {
       },
     );
   }
-
-  return NextResponse.json(
-    { response: "Hello, world! " + illustrationId + " " + imageId },
-    {
-      status: 200,
-      headers: HEADERS_CORS,
-    },
-  );
 }

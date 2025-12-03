@@ -69,7 +69,7 @@ export async function createIllustration(formData: FormData) {
     process_status: ILLUSTRATION_STATUS.PENDING,
   };
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("tbl_illustrations")
     .insert(illustrationDetail)
     .select("id")
@@ -80,7 +80,7 @@ export async function createIllustration(formData: FormData) {
   }
 
   return {
-    id: "sadsad",
+    id: data.id,
     ...illustrationDetail,
   };
 }
@@ -157,19 +157,6 @@ export async function getIllustrationById(id: string) {
   } catch (error) {
     return { error: error, data: null };
   }
-}
-
-export async function getProcessedImage(imageData: ImageItem) {
-  const randomDelay = Math.floor(Math.random() * 3000) + 1000; // 1–4s
-  await new Promise((resolve) => setTimeout(resolve, randomDelay));
-
-  return {
-    ...imageData,
-    images: {
-      base: imageData.images.base,
-      converted: "/images/demo-image-transformed.jpg",
-    },
-  };
 }
 
 export async function createIllustrationImage({
