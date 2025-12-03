@@ -20,7 +20,7 @@ export default async function IllustrationDetail({
 
     return (
       <div>
-        <div className={`flex justify-center items-center p-5 px-[25%]`}>
+        <div className={`flex justify-center items-center py-5 px-[10%]`}>
           <div className={`grid w-full`}>
             <div className="flex flex-col gap-2">
               <div className="flex items-center">

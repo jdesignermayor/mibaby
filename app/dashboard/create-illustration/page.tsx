@@ -1,5 +1,4 @@
 import CreateIllustationLayer from "@/components/features/illustrations/CreateIllustationLayer";
-import CreateIllustrationHeader from "@/components/features/illustrations/CreateIllustrationHeader";
 
 export default function CreateIllustration() {
   return (
