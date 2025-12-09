@@ -3,6 +3,7 @@ export interface ImageDataFormat {
   isFinished: boolean;
   isFailed: boolean;
   isPending: boolean;
+  isOpened?: boolean;
   images: {
     unprocessed: ImageUploaded;
     processed: ImageUploaded;

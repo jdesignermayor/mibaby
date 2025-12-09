@@ -41,7 +41,24 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
+  --animate-shiny-text: shiny-text 8s infinite;
+  @keyframes shiny-text {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+    }
+  30%, 60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+    }
+  }
+  --animate-shine: shine var(--duration) infinite linear
+;
+  @keyframes shine {
+  0% {
+    background-position: 0% 0%;}
+  50% {
+    background-position: 100% 100%;}
+  to {
+    background-position: 0% 0%;}}}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -131,4 +148,46 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes smoothDisruptive {
+  0% {
+    opacity: 0;
+    transform:
+      translateY(26px)
+      scale(0.92)
+      rotate(1.2deg);
+    filter: blur(6px);
+  }
+
+  45% {
+    opacity: 0.75;
+    transform:
+      translateY(8px)
+      scale(1.045)
+      rotate(-0.8deg);
+    filter: blur(2px);
+  }
+
+  75% {
+    opacity: 0.92;
+    transform:
+      translateY(-2px)
+      scale(0.985)
+      rotate(0.3deg);
+    filter: blur(0.5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1)
+      rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+.animate-smoothDisruptive {
+  animation: smoothDisruptive 1.35s cubic-bezier(0.22, 1, 0.32, 1) forwards;
 }

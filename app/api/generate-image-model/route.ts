@@ -100,7 +100,6 @@ export async function POST(request: Request) {
 
     const isStatusCompleted = computedImages.every((image) => image.isFinished);
 
-    console.log("isStatusCompleted:", isStatusCompleted);
     // update the images in the database
     const { error: updateError } = await supabase
       .from("tbl_illustrations")

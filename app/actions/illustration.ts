@@ -46,6 +46,8 @@ export async function createIllustration(formData: FormData) {
       return {
         id: Math.random().toString(36).substring(2, 15),
         isFinished: false,
+        isFailed: false,
+        isPending: true,
         images: {
           unprocessed: image,
           processed: {
