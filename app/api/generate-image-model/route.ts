@@ -1,9 +1,13 @@
-import type { AIGenerateImageModelRequest } from "@/models/ai.model";
+import type {
+  AIGenerateImageModelRequest,
+  AIShemaModelPrice,
+} from "@/models/ai.model";
 import {
   ILLUSTRATION_STATUS,
   type ImageDataFormat,
   type ImageUploaded,
 } from "@/models/illustration.model";
+
 import { createClient } from "@/utils/supabase/server";
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
@@ -16,37 +20,73 @@ const HEADERS_CORS = {
   "Cross-Origin-Resource-Policy": "same-origin",
 };
 
-async function generateGeminiImage() {
+async function generateGeminiImage({ imageBlob }: { imageBlob: ArrayBuffer }) {
   const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_API_KEY,
+    apiKey: process.env.GEMINI_APY_KEY,
+    // 3. Configuración técnica de la respuesta
   });
 
-  const prompt =
-    "Generate an image of this baby but realistic, please take care of the details, the position, the size, the face details, the baby should be in the gestational week:";
-
-  const contents = [
+  const prompt = [
     {
-      role: "user",
-      parts: [{ text: prompt }],
+      text: "generate random baby image",
+    },
+    {
+      inlineData: {
+        mimeType: "image/png",
+        data: Buffer.from(imageBlob).toString("base64"),
+      },
     },
   ];
-
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: contents,
-  });
-
-  console.log(response);
 }
 
 export async function POST(request: Request) {
   const supabase = await createClient();
 
+  async function insertModelExpense() {
+    // get model prices from the database by
+    try {
+      const { data: models, error: modelsError } = await supabase
+        .from("tbl_models")
+        .select("*")
+        .in("id", [2, 3]);
+
+      if (modelsError) {
+        return NextResponse.json(
+          { response: "Error getting models" },
+          {
+            status: 500,
+            headers: HEADERS_CORS,
+          },
+        );
+      }
+
+      const [modelInput, modelOutput]: AIShemaModelPrice[] = models;
+
+      console.log("insert model expense:", modelInput);
+      await supabase.from("tbl_expense_model_history").upsert([
+        {
+          illustration_id: illustrationId,
+          model_id: modelInput.id,
+          tokens: modelInput.tokens_per_generation,
+          type: "input",
+          price: modelInput.price_per_token_generation,
+        },
+      ]);
+    } catch (error) {
+      return NextResponse.json(
+        { response: "Error inserting model expense" },
+        {
+          status: 500,
+          headers: HEADERS_CORS,
+        },
+      );
+    }
+  }
+
   const { illustrationId, imageId, modelId, description, gestationalWeek } =
     (await request.json()) as AIGenerateImageModelRequest;
 
   try {
-    // looks for the images in the database
     const { data: illustrationData, error } = await supabase
       .from("tbl_illustrations")
       .select("*")
@@ -115,6 +155,29 @@ export async function POST(request: Request) {
       throw new Error(updateError.message);
     }
 
+    const { id, images: imagesProcess } = imageToProcess;
+    const {
+      unprocessed: { path },
+    } = imagesProcess;
+
+    console.log("path:", path);
+
+    await insertModelExpense();
+
+    // grab image file from path supabase storage
+    // const { data: imageData, error: imageError } = await supabase.storage
+    //   .from("unprocessed_images")
+    //   .download(path);
+
+    // if (imageData) {
+    //   const imageBlob = await imageData.arrayBuffer();
+    //   // await generateGeminiImage({ imageBlob: imageBlob });
+    // }
+
+    // if (imageError) {
+    //   throw new Error(imageError.message);
+    // }
+
     return NextResponse.json(
       { response: "Images updated successfully" },
       {
@@ -122,36 +185,9 @@ export async function POST(request: Request) {
         headers: HEADERS_CORS,
       },
     );
-    // console.log("imageToProcess:", imageToProcess);
-
-    // const imageToProcess: ImageUploaded = images.find(
-    //   (image: ImageUploaded) => image.id === imageId,
-    // );
-
-    // console.log("imageToProcess:", imageToProcess);
-
-    // const { id, path, publicUrl } = imageToProcess;
-
-    // // grab image file from path supabase storage
-    // const { data: imageData, error: imageError } = await supabase.storage
-    //   .from("unprocessed_images")
-    //   .download(path);
-
-    // console.log("imageData:", imageData);
-
-    // const newImageInfo = {
-    //   id,
-    //   path: '',
-    //   publicUrl: '',
-    //   fullPath: '',
-    // }
-
-    // if (imageError) {
-    //   throw new Error(imageError.message);
-    // }
   } catch (error) {
     return NextResponse.json(
-      { response: "Error: " + error },
+      { response: "Error generating image, please try again later." },
       {
         status: 500,
         headers: HEADERS_CORS,

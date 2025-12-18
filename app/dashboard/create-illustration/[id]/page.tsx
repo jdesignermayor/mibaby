@@ -1,6 +1,6 @@
 import { getIllustrationById } from "@/app/actions/illustration";
 import CreateIllustrationView from "@/components/features/illustrations/CreateIllustationView";
-import { PaletteIcon } from "lucide-react";
+import { EyeIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function IllustrationDetail({
@@ -25,13 +25,14 @@ export default async function IllustrationDetail({
             <div className="flex flex-col gap-2">
               <div className="flex items-center">
                 <p className="font-bold text-lg">
-                  <PaletteIcon className="size-6" />
-                  Crear ilustración
+                  <EyeIcon className="size-6" />
+                  Revelar ecografía hiperrealista
                 </p>
               </div>
               <p className="text-muted-foreground text-sm">
-                Selecciona el cliente y las ecografias 3D que deseas convertir
-                en ecografias hiperrealistas.
+                Revela tu ecografía hiperrealista creada, una ves finalizada la
+                generación, puedes verla y compartirla con tus amigos y
+                familiares.
               </p>
             </div>
             <div className="pt-6 w-full">

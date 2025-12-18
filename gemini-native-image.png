@@ -1,0 +1,13 @@
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Este es un marcador de posición. El contenido real de "[object Object]" no se puede representar directamente en SVG. -->
+  <!-- Si "[object Object]" representa un objeto geométrico específico, por favor, proporcione los detalles. -->
+  <!-- Por ejemplo, si fuera un círculo, el SVG podría ser: -->
+  <!-- <circle cx="50" cy="50" r="40" fill="blue" /> -->
+  <!-- Si fuera un rectángulo: -->
+  <!-- <rect x="10" y="10" width="80" height="80" fill="red" /> -->
+  <!-- Si fuera texto: -->
+  <!-- <text x="50" y="50" font-family="Arial" font-size="20" text-anchor="middle" alignment-baseline="middle">Object</text> -->
+  <text x="50" y="50" font-family="Arial" font-size="12" text-anchor="middle" alignment-baseline="middle" fill="gray">[object Object]</text>
+</svg>
+```

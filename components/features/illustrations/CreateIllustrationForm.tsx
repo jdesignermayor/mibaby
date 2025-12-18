@@ -33,12 +33,10 @@ import * as z from "zod";
 import CreateCustomerDialog from "../profiles/CreateCustomerDialog";
 
 import { createIllustration } from "@/actions/illustration";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import { BUCKET_NAME, MODELS } from "@/lib/utils";
 import { illustrationAtomState } from "@/stores/features/illustration.store";
 import { supabase } from "@/utils/supabase/supabaseClient";
-import { AvatarFallback } from "@radix-ui/react-avatar";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -382,9 +380,9 @@ export default function CreateIllustrationForm() {
                     key={Math.floor(Math.random() * 50)}
                     src={img.base64}
                     alt="image"
-                    width={300}
-                    height={300}
-                    className=" w-30 h-30 rounded-md object-cover border"
+                    width={500}
+                    height={500}
+                    className=" w-60 h-60 rounded-md object-cover border"
                   />
                 </div>
               );
@@ -393,7 +391,7 @@ export default function CreateIllustrationForm() {
               type="button"
               variant="ghost"
               onClick={handleClick}
-              className=" cursor-pointer w-30 h-30 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
+              className=" cursor-pointer w-60 h-60 rounded-md flex items-center justify-center outline-1 -outline-offset-1 outline-gray-900/20 outline-dashed dark:outline-white/20"
             >
               <PlusIcon />
             </Button>
@@ -469,7 +467,7 @@ export default function CreateIllustrationForm() {
             />
           </div>
         </div>
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <Controller
             name="modelId"
             control={control}
@@ -504,7 +502,7 @@ export default function CreateIllustrationForm() {
               </div>
             )}
           />
-        </div>
+        </div> */}
         <div>
           <CreateCustomerDialog />
         </div>

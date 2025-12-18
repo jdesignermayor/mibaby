@@ -1,5 +1,14 @@
+"use client";
+
 import type { Illustration } from "@/models/illustration.model";
-import ImageSelectorPanel from "./ImageSelectorPanel";
+import dynamic from "next/dynamic";
+
+const DynamicImageSelectorPanel = dynamic(
+  () => import("@/components/features/illustrations/ImageSelectorPanel"),
+  {
+    ssr: false,
+  },
+);
 
 export default function CreateIllustrationView({
   illustration,
@@ -9,7 +18,7 @@ export default function CreateIllustrationView({
   return (
     <div>
       <div>
-        <ImageSelectorPanel illustration={illustration} />
+        <DynamicImageSelectorPanel illustration={illustration} />
       </div>
     </div>
   );
