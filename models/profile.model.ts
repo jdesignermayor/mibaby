@@ -1,4 +1,4 @@
-export interface Profile {
+export interface ProfileSchema {
   id: string;
   id_company: string;
   uuid_user: string;
@@ -6,7 +6,7 @@ export interface Profile {
   age: number;
   doc: number;
   phone: string;
-  createdAt: string;
+  created_at: string;
   uuid_profile: string;
   avatar_picture_url?: string;
 }

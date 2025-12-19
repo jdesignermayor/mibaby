@@ -1,8 +1,13 @@
 "use client";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -11,12 +16,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCompany } from "@/hooks/use-company";
-import { BabyIcon } from "lucide-react";
-import { Profile } from "@/models/profile.model";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { ProfileSchema } from "@/models/profile.model";
 
-export default function ListProfilesTable({ profiles, total, page, setPage, limit, setLimit }: { profiles: Profile[], total: number, page: number, setPage: (page: number) => void, limit: number, setLimit: (limit: number) => void }) {
+export default function ListProfilesTable({
+  profiles,
+  total,
+  page,
+  setPage,
+  limit,
+  setLimit,
+}: {
+  profiles: ProfileSchema[];
+  total: number;
+  page: number;
+  setPage: (page: number) => void;
+  limit: number;
+  setLimit: (limit: number) => void;
+}) {
   const handlePageChange = (page: number) => {
     setPage(page);
   };
@@ -24,6 +40,8 @@ export default function ListProfilesTable({ profiles, total, page, setPage, limi
   const handleLimitChange = (limit: number) => {
     setLimit(limit);
   };
+
+  console.log("profiles:", profiles);
 
   return (
     <div className="rounded-md border overflow-hidden">
@@ -57,13 +75,14 @@ export default function ListProfilesTable({ profiles, total, page, setPage, limi
 
                 {/* CreatedAt */}
                 <TableCell>
-                  {new Date(p.createdAt).toLocaleDateString()}
+                  {new Date(p.created_at).toLocaleDateString()}
                 </TableCell>
 
                 {/* Actions */}
                 <TableCell>
                   <Button
                     size="sm"
+                    className="cursor-pointer"
                     variant="outline"
                     onClick={() => console.log("Perfil:", p)}
                   >
@@ -83,13 +102,12 @@ export default function ListProfilesTable({ profiles, total, page, setPage, limi
       </Table>
 
       <div className="flex items-center justify-between p-2">
-
         {/* Selector de "items por página" */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Mostrar:</span>
           <Select
             value={String(limit)}
-            onValueChange={(value : unknown) => setLimit(Number(value))}
+            onValueChange={(value: unknown) => setLimit(Number(value))}
           >
             <SelectTrigger className="w-[80px]">
               <SelectValue />

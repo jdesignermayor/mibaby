@@ -8,7 +8,6 @@ import {
   type ImageFormat,
   type ImageUploaded,
 } from "@/models/illustration.model";
-import type { Profile } from "@/models/profile.model";
 import { createClient } from "@/utils/supabase/server";
 
 const UNPROCESSED_IMAGES_BUCKET = "unprocessed_images";
@@ -87,49 +86,6 @@ export async function createIllustration(formData: FormData) {
   };
 }
 
-export async function getProfiles({
-  limit = 10,
-  page = 1,
-  query = "",
-  order = "created_at",
-  ascending = false,
-}: {
-  limit?: number;
-  page?: number;
-  query?: string;
-  order?: string;
-  ascending?: boolean;
-}): Promise<Profile[]> {
-  const supabase = await createClient();
-
-  const from = (page - 1) * limit;
-  const to = from + limit;
-
-  try {
-    const req = supabase
-      .from("tbl_profiles")
-      .select("*", { count: "exact" })
-      .range(from, to)
-      .order(order, { ascending: ascending });
-
-    if (query !== "" && query) {
-      console.log("query:", query);
-      req.ilike("name", `%${query}%`);
-    }
-
-    const { data, error } = await req;
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data as Profile[];
-  } catch (error: Error) {
-    console.log("error:", error);
-    throw new Error(error.message);
-  }
-}
-
 export async function getIllustrationById(id: string) {
   const supabase = await createClient();
 
@@ -161,20 +117,8 @@ export async function getIllustrationById(id: string) {
   }
 }
 
-export async function createIllustrationImage({
-  illustrationId,
-  urlBucketImage,
+export async function generateAIimage({
+  imageBlob,
 }: {
   illustrationId: string;
-  urlBucketImage: string;
-}) {
-  return {
-    illustrationId: illustrationId,
-    title: "Image title",
-    description: "Image description",
-    image: {
-      default: "",
-      converted: "",
-    },
-  };
-}
+}) {}

@@ -1,30 +1,25 @@
 "use client";
 
 import CreateCustomerDialog from "@/components/features/profiles/CreateCustomerDialog";
-import ListProfilesTable from "@/components/features/profiles/ListProfilesTable";
-import { useProfiles } from "@/hooks/user-profile";
-import { useState } from "react";
+import dynamic from "next/dynamic";
+
+const DynamicProfilesPanel = dynamic(
+  () => import("@/components/features/profiles/ProfilesPanel"),
+  {
+    ssr: false,
+  },
+);
 
 export default function ProfilesPage() {
- const { data: profiles, isLoading: isLoadingProfiles, error: errorProfiles } = useProfiles({ page: 1, limit: 10, search: "" });
-
- const [page, setPage] = useState(1);
- const [limit, setLimit] = useState(10);
-
-  return <div className="p-5 h-[calc(100dvh)] flex flex-col">
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Profiles</h1>
-      <div>
-        <CreateCustomerDialog />
+  return (
+    <div className="p-5 h-[calc(100dvh)] flex flex-col">
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold">Profiles</h1>
+        <div>
+          <CreateCustomerDialog />
+        </div>
+        <DynamicProfilesPanel />
       </div>
-      <ListProfilesTable 
-        profiles={profiles || []}
-        total={profiles?.length ?? 0}
-        page={page}
-        setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
-      />
     </div>
-  </div>;
+  );
 }
