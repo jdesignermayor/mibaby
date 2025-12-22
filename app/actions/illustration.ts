@@ -117,8 +117,22 @@ export async function getIllustrationById(id: string) {
   }
 }
 
-export async function generateAIimage({
-  imageBlob,
-}: {
-  illustrationId: string;
-}) {}
+export async function getIllustrations(): Promise<{
+  data: Illustration[];
+  error: Error | null;
+}> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("tbl_illustrations")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      throw new Error(error.message);
+    }
+    return { data: data, error: null };
+  } catch (error) {
+    return { data: [], error: error as Error };
+  }
+}

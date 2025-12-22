@@ -34,12 +34,6 @@ export async function getProfiles({
 }): Promise<{ data: ProfileSchema[]; count: number }> {
   const supabase = await createClient();
 
-  console.log("limit:", limit);
-  console.log("page:", page);
-  console.log("query:", query);
-  console.log("order:", order);
-  console.log("ascending:", ascending);
-
   const from = (page - 1) * limit;
   const to = from + limit;
 
@@ -51,13 +45,25 @@ export async function getProfiles({
       req = req.ilike("name", `%${query}%`);
     }
 
-    // const { data, error, count } = await req.order(order, {
-    //   ascending: ascending,
-    // });
+    await req.order(order, {
+      ascending: ascending,
+    });
 
-    // if (error) {
-    //   throw new Error(error.message);
-    // }
+    if (limit > 0) {
+      console.log("limit is increasing:", limit);
+      req = req.limit(limit);
+    }
+
+    if (page > 1) {
+      console.log("from:", from);
+      req = req.range(from, to);
+    }
+
+    const { data, error, count } = await req;
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     const computedData = { data: data as ProfileSchema[], count: count ?? 0 };
     console.log("computedData:", computedData);

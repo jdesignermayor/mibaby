@@ -17,6 +17,6 @@ export const useProfiles = ({
     queryKey: ["profiles", page, limit, search],
     queryFn: () => getProfiles({ page, limit, query: search }),
     placeholderData: (previousData) => previousData,
-    enabled: false,
+    enabled: true,
   });
 };

@@ -2,8 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useGetIllustrations } from "@/hooks/use-illustration";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
+  const { data: illustrations, error, isLoading } = useGetIllustrations();
   return (
     <div className="flex flex-col gap-8 w-full p-5">
       <div className="grid gap-4">
@@ -48,8 +53,39 @@ export default function Dashboard() {
             etc.
           </p>
         </div>
-        <div>
-          <div className="flex gap-6"></div>
+        <div className="flex  gap-2 overflow-y-scroll">
+          {illustrations?.data?.map((illustration) => (
+            <Card
+              key={illustration.id}
+              className=" border rounded-md p-2 cursor-pointer hover:bg-gray-100"
+              onClick={() =>
+                router.push(`/dashboard/create-illustration/${illustration.id}`)
+              }
+            >
+              <div
+                className="flex gap-2"
+                style={{ width: "200px", height: "200px" }}
+              >
+                <Image
+                  src={illustration.images[0].images.unprocessed.publicUrl}
+                  alt="illustration"
+                  className="object-cover"
+                  width={100}
+                  height={100}
+                />
+                <Image
+                  src={illustration.images[0].images.processed.publicUrl}
+                  alt="illustration"
+                  className="object-cover"
+                  width={100}
+                  height={100}
+                />
+              </div>
+              <div>
+                <p>{illustration.created_at}</p>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
